@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <title>Bejelentkezés</title>
 </head>
 <body>
     <div class="container" id="container">
         <div class="form-container signUp">
-            <form method="POST" action="register.php">
+            <form action="../controller/UserController.php?action=register" method="POST">
 
                 <h1>Regisztráció</h1>
                 <div class="icons">
@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-container sign-in">
-            <form method="POST" action="register.php">
+            <form action="../controller/UserController.php?action=login" method="POST">
 
                 <h1>Bejelentkezés</h1>
                 <div class="icons">
@@ -72,7 +72,7 @@
 
                 <a href="#">Elfelejtetted a jelszavad?</a>
                 <button type="submit" class="btn" value="signIn" name="signIn">Bejelentkezés</button>
-            </form>
+            </action=>
         </div>
         <div class="toggle-container">
             <div class="toggle">
@@ -92,6 +92,6 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="../js/script.js"></script>
 </body>
 </html>
