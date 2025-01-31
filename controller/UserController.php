@@ -13,11 +13,13 @@ if ($action === 'login') {
     if ($user) {
         session_start();
         $_SESSION['user'] = [
-                'name' => $user['name'], // Assuming $user contains the user's data
-                'email' => $user['email'],
-                'phone' => $user['phone']
+            'id' => $user['id'], // Az id érték beállítása
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'phone' => $user['phone']
         ];
         header('Location: ../views/explore.php');
+        exit(); // Ne felejtsd el az exit() hívást az átirányítás után
     } else {
         echo "Invalid credentials!";
     }
@@ -29,6 +31,7 @@ if ($action === 'login') {
 
     if ($userModel->register($name, $email, $phone, $password)) {
         header('Location: ../views/index.php'); // Redirect to login page after registration
+        exit(); // Ne felejtsd el az exit() hívást az átirányítás után
     } else {
         echo "Registration failed!";
     }

@@ -16,10 +16,11 @@ $user = $_SESSION['user'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="../css/mainstyle.css">
     <title>Felfedezés</title>
 </head>
-<body>
+<body data-user-id='<?php echo htmlspecialchars($user['id']); ?>'>
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">
@@ -144,25 +145,40 @@ $user = $_SESSION['user'];
 
     <!-- Modal -->
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dataModalLabel">Szolgáltatás Részletei</h5>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dataModalLabel">Szolgáltatás részletei</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="provider-details">
+                    <h5 name="name" id="name"></h5>
+                    <p name="description" id="description"></p>
+                    <p name="provider" id="provider"></p>
+                    <p name="duration" id="duration"></p>
+                    <p name="price" id="price"></p>
                 </div>
-                <div class="modal-body" id="modalBody">
-                <!-- itt lesznek az adatok megjelenitve, illetve a naptár -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
-                </div>
+                <div id="calendar"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="book">Időpont választás</button>
+                <button type="button" class="btn btn-success" id="bookAppointment" style="display: none;">Foglalás</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="../js/mainscript.js"></script>
-    <script>const userId = <?php echo json_encode($user['id']); ?>; // Get the user ID from PHP session</script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+
+    <script>
+    window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
+    window.providerId = <?php echo json_encode($provider_id ?? null); ?>;
+</script>
 </body>
 </html>

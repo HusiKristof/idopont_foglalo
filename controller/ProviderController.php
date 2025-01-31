@@ -1,6 +1,12 @@
 <?php
 require_once '../models/Provider.php';
-require_once '../database.php'; // Database connection
+require_once '../database.php';
+session_start();
+
+if (!isset($_SESSION['user'])) {
+    echo json_encode(['status' => 'error', 'message' => 'You must be logged in to make a booking.']);
+    exit();
+}
 
 $action = $_GET['action'] ?? '';
 
@@ -20,12 +26,6 @@ if ($action === 'fetch') {
             echo '<p><strong>Price:</strong> ' . htmlspecialchars($provider['price']) . ' Ft</p>';
             echo '<p><strong>Duration:</strong> ' . htmlspecialchars($provider['duration']) . ' minutes</p>';
             echo '</div>'; // zárd le a provider-details div-et
-        
-            // Naptár HTML
-            echo '<div class="calendar">';
-            echo '<h6>Időpontfoglalás</h6>';
-            echo '<div id="calendar"></div>';
-            echo '</div>';
         } else {
             echo 'Provider not found.';
         }
@@ -33,4 +33,31 @@ if ($action === 'fetch') {
         echo 'Invalid request.';
     }
 }
+
+// Ellenőrizzük, hogy a user_id benne van-e a session-ben
+$user_id = $_SESSION['user']['id'] ?? null;
+if (!$user_id) {
+    echo json_encode(['status' => 'error', 'message' => 'User ID not found in session.']);
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $date = $_POST['selectedDate'] ?? '';
+    $provider_id = $_POST['provider_id'] ?? '';
+
+    if ($date && $provider_id) {
+        $stmt = $db->prepare("INSERT INTO appointments (user_id, service_id, provider_id, appointment_date, status) VALUES (?, ?, ?, ?, 'pending')");
+        
+        if ($stmt->execute([$user_id, $service_id, $provider_id, $date,])) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => $stmt->errorInfo()]);
+        }
+    } else {
+        //echo json_encode(['status' => 'error', 'message' => 'Invalid input.']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+}
+
 ?>

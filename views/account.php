@@ -30,7 +30,7 @@
                 <span>Főoldal</span>
             </a>
 
-            <a href="#" class="active">
+            <a href="explore.php">
                 <i class="fa fa-compass"></i>
                 <span>Felfedezés</span>
             </a>
@@ -50,28 +50,68 @@
 
 
     <div class="account-container">
-        <a href="javascript:history.back()" class="back-link">
-            <i class="fas fa-arrow-left"></i> Vissza
-        </a>
-        <h1>Fiók Beállítások</h1>
-        <div class="account-details">
-            <div class="detail-item">
-                <label for="username">Felhasználónév:</label>
-                <span id="username"><?php echo htmlspecialchars($user['name']); ?></span>
-            </div>
-            <div class="detail-item">
-                <label for="email">Email:</label>
-                <span id="email"><?php echo htmlspecialchars($user['email']); ?></span>
-            </div>
-            <div class="detail-item">
-                <label for="phone">Telefonszám:</label>
-                <span id="phone"><?php echo htmlspecialchars($user['phone']); ?></span>
-            </div>
+    <a href="javascript:history.back()" class="back-link">
+        <i class="fas fa-arrow-left"></i> Vissza
+    </a>
+    <h1>Fiók Beállítások</h1>
+    
+    <div id="account-details" style="display: block;">
+        <div class="detail-item">
+            <label for="username">Felhasználónév:</label>
+            <span id="name"><?php echo htmlspecialchars($user['name'] ?? ''); ?></span>
         </div>
-        <div class="account-actions">
-            <button class="btn btn-primary">Adatok Módosítása</button>
-            <button class="btn btn-danger">Fiók Törlése</button>
+        <div class="detail-item">
+            <label for="email">Email:</label>
+            <span id="email"><?php echo htmlspecialchars($user['email'] ?? ''); ?></span>
+        </div>
+        <div class="detail-item">
+            <label for="phone">Telefonszám:</label>
+            <span id="phone"><?php echo htmlspecialchars($user['phone'] ?? ''); ?></span>
         </div>
     </div>
+    
+    <div class="account-actions">
+        <button type="button" class="btn btn-primary" onclick="toggleEditForm()">Adatok Módosítása</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Fiók Törlése</button>
+    </div>
+
+    <div id="edit-form" style="display: none; margin-top: 20px;">
+        <h2>Adatok Módosítása</h2>
+        <form action="../models/update_user.php" method="POST">
+            <div class="detail-item">
+                <label for="edit-username">Felhasználónév:</label>
+                <input type="text" id="edit-username" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+            </div>
+            <div class="detail-item">
+                <label for="edit-email">Email:</label>
+                <input type="email" id="edit-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+            </div>
+            <div class="detail-item">
+                <label for="edit-phone">Telefonszám:</label>
+                <input type="text" id="edit-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+            </div>
+            <div class="account-actions">
+                <button type="submit" class="btn btn-primary">Mentés</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">Mégse</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleEditForm() {
+    var editForm = document.getElementById('edit-form');
+    var accountDetails = document.getElementById('account-details');
+    
+    if (editForm.style.display === 'none') {
+        editForm.style.display = 'block';
+        accountDetails.style.display = 'none'; // Elrejti az alap adatokat
+    } else {
+        editForm.style.display = 'none';
+        accountDetails.style.display = 'block'; // Visszaállítja az alap adatokat
+    }
+}
+</script>
 </body>
 </html>
+
