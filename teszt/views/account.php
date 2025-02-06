@@ -25,12 +25,12 @@
             <input type="text" class="search-input" placeholder="Keresés...">
             <i class="fas fa-search search-icon"></i>
 
-            <a href="/landing/mainpage.html">
+            <a href="landing.html">
                 <i class="fa fa-home"></i>
                 <span>Főoldal</span>
             </a>
 
-            <a href="explore.php">
+            <a href="mainpage.php">
                 <i class="fa fa-compass"></i>
                 <span>Felfedezés</span>
             </a>
@@ -40,7 +40,7 @@
                 <span>Időpontjaim</span>
             </a>
             
-            <a href="/account/account.html">
+            <a href="">
                 <i class="fa fa-user"></i>
                 <span>Fiók</span>
             </a>
@@ -98,20 +98,7 @@
     </div>
 </div>
 
-<script>
-function toggleEditForm() {
-    var editForm = document.getElementById('edit-form');
-    var accountDetails = document.getElementById('account-details');
-    
-    if (editForm.style.display === 'none') {
-        editForm.style.display = 'block';
-        accountDetails.style.display = 'none'; // Elrejti az alap adatokat
-    } else {
-        editForm.style.display = 'none';
-        accountDetails.style.display = 'block'; // Visszaállítja az alap adatokat
-    }
-}
-</script>
+<script src="../js/accountscript.js"></script>
 </body>
 </html>
 

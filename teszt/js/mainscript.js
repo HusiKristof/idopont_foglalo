@@ -79,6 +79,7 @@ $('.card').on('click', function() {
         $('#bookAppointment').show();
         // Hide the book button
         $(this).hide();
+        handleBooking(selectedDate); //itt folytatsd hulyegyerek
       });
   
       // Handle booking confirmation
@@ -143,25 +144,24 @@ $('.card').on('click', function() {
     }
   
     function handleDateSelect(start, end) {
-      console.log('Date selected:', start.format('YYYY-MM-DD'));
+      const selectedDate = start.format('YYYY-MM-DD');
+      console.log('Date selected:', selectedDate);
       if (!userId) {
         alert('Please log in to book appointments');
         return;
       }
   
-      const selectedDate = start.format('YYYY-MM-DD');
       const providerId = $('#dataModal').data('provider-id');
       
       if (!providerId) {
         alert('Please select a provider first');
         return;
       }
-  
     }
   
-    function handleBooking() {
+    function handleBooking(selectedDate) {
       console.log('Booking button clicked');
-      const selectedDate = calendar.fullCalendar('getDate').format('YYYY-MM-DD');
+      //const selectedDate = calendar.fullCalendar('getDate').format('YYYY-MM-DD');
       const providerId = $('#dataModal').data('provider-id');
       
       if (!selectedDate || !providerId) {

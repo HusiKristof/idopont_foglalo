@@ -2,7 +2,7 @@
 require_once '../models/User.php';
 require_once '../database.php'; // Database connection
 
-$action = $_GET['action'] ?? '';
+$action = isset($_GET["action"]) ? $_GET["action"] : null;
 
 $userModel = new User($db);
 
@@ -18,7 +18,7 @@ if ($action === 'login') {
             'email' => $user['email'],
             'phone' => $user['phone']
         ];
-        header('Location: ../views/explore.php');
+        header('Location: ../views/mainpage.php');
         exit(); // Ne felejtsd el az exit() hívást az átirányítás után
     } else {
         echo "Invalid credentials!";

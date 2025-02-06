@@ -1,12 +1,18 @@
 <?php
-    session_start();
+session_start();
+
+// Check if this is a GET request to the root/default endpoint
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/') {
     if (!isset($_SESSION['user'])) {
-        header('Location: index.php'); // Redirect to login if not logged in
+        // If not logged in, stay on the homepage
+        // No redirection needed since this is the default page
+    } else {
+        // If logged in, redirect to main page
+        header('Location: /mainpage');
         exit();
     }
-
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -14,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/homestyle.css">
+    <link rel="stylesheet" href="/css/homestyle.css">
     <title>Időpontfoglalás</title>
 </head>
 <body>
@@ -22,15 +28,12 @@
         <div class="hero-content">
             <h1>Üdvözlünk az Időpontfoglaló Rendszerünkben!</h1>
             <p>Egyszerű és gyors időpontfoglalás különféle szolgáltatásokhoz.</p>
-
-            <a href="index.php">
+            <a href="#">
                 <i class="fa fa-compass"></i>
                 <span>A Felfedezéshez!</span>
             </a>
-
         </div>
     </header>
-
     <section class="features-section">
         <div class="container">
             <div class="row text-center">

@@ -26,7 +26,7 @@ $user = $_SESSION['user'];
             <input type="text" class="search-input" placeholder="Keresés...">
             <i class="fas fa-search search-icon"></i>
 
-            <a href="mainpage.php">
+            <a href="landing.php">
                 <i class="fa fa-home"></i>
                 <span>Főoldal</span>
             </a>
