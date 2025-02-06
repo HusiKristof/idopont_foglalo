@@ -7,9 +7,18 @@ class User {
     }
 
     public function register($name, $email, $phone, $password) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$name, $email, $phone, $hashedPassword]);
+        global $db; // Assuming you have a global PDO connection
+    
+        // Check if email exists
+        $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetchColumn() > 0) {
+            throw new Exception("Email already registered!");
+        }
+    
+        // Insert new user
+        $stmt = $db->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$name, $email, $phone, password_hash($password, PASSWORD_DEFAULT)]);
     }
 
     public function login($email, $password) {

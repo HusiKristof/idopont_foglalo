@@ -30,7 +30,7 @@ if ($action === 'login') {
     $password = $_POST['password'];
 
     if ($userModel->register($name, $email, $phone, $password)) {
-        header('Location: ../views/index.php'); // Redirect to login page after registration
+        header('Location: ../index.php'); // Redirect to login page after registration
         exit(); // Ne felejtsd el az exit() hívást az átirányítás után
     } else {
         echo "Registration failed!";
