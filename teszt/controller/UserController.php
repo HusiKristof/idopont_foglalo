@@ -2,9 +2,30 @@
 require_once '../models/User.php';
 require_once '../database.php'; // Database connection
 
-$action = isset($_GET["action"]) ? $_GET["action"] : null;
+class UserController {
+    static function registerUser($request){
+
+        $userArray = $request->getBody();
+
+        $user = new User($userArray['database'], $userArray['id'], $userArray['name'], $userArray['email'], $userArray['phone'], $userArray['password']);
+        $response = UserService::register($user);
+
+        return $response;
+    }
+
+    static function loginUser($request){
+        $userArray = $request->getBody();
+
+        $user = new User($userArray['database'], $userArray['id'], $userArray['name'], $userArray['email'], $userArray['phone'], $userArray['password']);
+        $response = UserService::login($user);
+
+        return $response;
+    }
+}
+/* $action = isset($_GET["action"]) ? $_GET["action"] : null;
 
 $userModel = new User($db);
+
 
 if ($action === 'login') {
     $email = $_POST['email'];
@@ -35,5 +56,5 @@ if ($action === 'login') {
     } else {
         echo "Registration failed!";
     }
-}
+} */
 ?>

@@ -119,7 +119,7 @@ $user = $_SESSION['user'];
                 <div class="card" data-id="5">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Model_T_Casino_interior.jpg/1200px-Model_T_Casino_interior.jpg" alt="futyi">
                     <div class="card-footer">
-                        <span>husi kristof futyi service</span>
+                        <span>husi kristof casino service</span>
                         <span class="star">
                             <i class="fa fa-star"></i> 6
                         </span>
