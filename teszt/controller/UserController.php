@@ -2,9 +2,14 @@
 require_once '../models/User.php';
 require_once '../database.php'; // Database connection
 
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+    exit();
+}
+
 class UserController {
     static function registerUser($request){
-
         $userArray = $request->getBody();
 
         $user = new User($userArray['database'], $userArray['id'], $userArray['name'], $userArray['email'], $userArray['phone'], $userArray['password']);

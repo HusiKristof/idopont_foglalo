@@ -10,7 +10,7 @@
 <body>
     <div class="container" id="container">
         <div class="form-container signUp">
-            <form action="controller/UserController.php?action=register" method="POST">
+            <form action="/register" method="POST">
 
                 <h1>Regisztráció</h1>
                 <div class="icons">
@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-container sign-in">
-            <form action="../controller/UserController.php?action=login" method="POST">
+            <form action="/login" method="POST">
 
                 <h1>Bejelentkezés</h1>
                 <div class="icons">

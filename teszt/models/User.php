@@ -1,6 +1,6 @@
 <?php
 
-require '../database.php';
+require_once '../database.php';
 
 class User {
     private $db;
@@ -39,32 +39,27 @@ class User {
 
 	public function setPassword( $password): void {$this->password = $password;}
 
-
-    public static function registerUser(User $user){
-        global $db;
+    public static function registerUser (User $user){
         $name = $user->getName();
         $email = $user->getEmail();
         $phone = $user->getPhone();
         $password = $user->getPassword();
-
+    
         $config = new Config();
         $connection = $config->getConnection();
-    
+        
         // Check if email exists
-        $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+        /* $stmt = $connection->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->fetchColumn() > 0) {
             throw new Exception("Email already registered!");
-        }
-    
+        } */
+        
         // Insert new user
-        $stmt = $db->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$name, $email, $phone, password_hash($password, PASSWORD_DEFAULT)]);
-
-        $sql = ("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
-
-        return mysqli_query($connection,$sql);
+        $stmt = $connection->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$name, $email, $phone, password_hash($password, PASSWORD_DEFAULT)]);
     }
+
 
     public static function loginUser(User $user, $email, $password) {
 
@@ -78,6 +73,10 @@ class User {
         if ($user && password_verify($password, $user['password'])) {
             return $user; // A felhasználó adatai, beleértve az id-t is
         }
+
+        
+        header('Location: ../views/mainpage.php');
+
         return false;
     }
 }
