@@ -1,2 +1,0 @@
-# idopont_foglalo
- 

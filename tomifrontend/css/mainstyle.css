@@ -401,6 +401,32 @@ body.dark-mode {
     margin-right: 5px;
 }
 
+.appointments-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.appointments-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.appointments-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.appointments-container li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.appointments-container li:last-child {
+    border-bottom: none;
+}
+
 /* ------------------------------------------------------------------------------------------------ ACCOUNTSTYLE */
 
 .account-container {

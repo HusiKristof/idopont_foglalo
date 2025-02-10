@@ -39,12 +39,14 @@ if ($action === 'fetch') {
         error_log('Booking request data: ' . print_r($_POST, true));
         
         $date = $_POST['selectedDate'] ?? null;
+        $time = $_POST['selectedTime'] ?? null;
         $provider_id = $_POST['provider_id'] ?? null;
         
-        if ($date && $provider_id) {
-            // Remove the service_id from the query since it's not being used
+        if ($date && $time && $provider_id) {
+            $appointment_datetime = $date . ' ' . $time;
+            // Insert the appointment into the database
             $stmt = $db->prepare("INSERT INTO appointments (user_id, provider_id, appointment_date, status) VALUES (?, ?, ?, 'pending')");
-            if ($stmt->execute([$user_id, $provider_id, $date])) {
+            if ($stmt->execute([$user_id, $provider_id, $appointment_datetime])) {
                 echo json_encode(['status' => 'success']);
             } else {
                 echo json_encode(['status' => 'error', 'message' => $stmt->errorInfo()]);
@@ -53,5 +55,31 @@ if ($action === 'fetch') {
             echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
         }
     }
+} elseif ($action === 'fetchHours') {
+    $date = $_POST['date'] ?? null;
+    $provider_id = $_POST['provider_id'] ?? null;
+
+    if ($date && $provider_id) {
+        // Fetch available hours from the database
+        $query = "SELECT appointment_date FROM appointments WHERE provider_id = ? AND DATE(appointment_date) = ?";
+        $stmt = $db->prepare($query);
+        $stmt->execute([$provider_id, $date]);
+        $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Format the response for FullCalendar
+        $events = [];
+        foreach ($appointments as $appointment) {
+            $events[] = [
+                'title' => 'Booked',
+                'start' => $appointment['appointment_date'],
+                'end' => $appointment['appointment_date'],
+                'allDay' => false
+            ];
+        }
+
+        echo json_encode($events);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
+    }
+    exit();
 }
-?>
