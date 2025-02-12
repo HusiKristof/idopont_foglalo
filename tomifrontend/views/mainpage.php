@@ -21,6 +21,7 @@ $user = $_SESSION['user'];
     <title>Felfedezés</title>
 </head>
 <body data-user-id='<?php echo htmlspecialchars($user['id']); ?>'>
+<button id="theme-toggle" class="btn btn-secondary" style="position: fixed; top: 10px; right: 10px;">Light Mode</button>
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">
@@ -36,7 +37,7 @@ $user = $_SESSION['user'];
                 <span>Felfedezés</span>
             </a>
             
-            <a href="#">
+            <a href="appointments.php">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Időpontjaim</span>
             </a>
@@ -119,7 +120,7 @@ $user = $_SESSION['user'];
                 <div class="card" data-id="5">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Model_T_Casino_interior.jpg/1200px-Model_T_Casino_interior.jpg" alt="futyi">
                     <div class="card-footer">
-                        <span>husi kristof casino service</span>
+                        <span>husi kristof futyi service</span>
                         <span class="star">
                             <i class="fa fa-star"></i> 6
                         </span>
@@ -142,6 +143,33 @@ $user = $_SESSION['user'];
     </div>
 
     <hr class="divider">
+
+    <div class="social-media-section">
+    <h2>Kövess minket!</h2>
+    <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+
+<div class="faq-section">
+    <h2>Gyakran Ismételt Kérdések</h2>
+    <div class="faq">
+        <h3>Hogyan foglalhatok időpontot?</h3>
+        <p>Az időpontfoglalás egyszerű. Csak válaszd ki a szolgáltatást, majd kattints az "Időpont választás" gombra.</p>
+    </div>
+    <div class="faq">
+        <h3>Hogyan mondhatom le a folgalásomat?</h3>
+        <p>A foglalás után, az "Időpontjaim" menüre kattintva mondhatod le foglalásod.</p>
+    </div>
+    <div class="faq">
+        <h3>Szükséges-e előleget fizetni a foglalás megerősítéséhez?</h3>
+        <p>Nem, előleget nem kell fizetnie. A szolgáltatás árát csak az igénybevétel után kell kiegyenlíteni.</p>
+    </div>
+    <div class="faq">
+        <h3>Milyen fizetési módok állnak rendelkezésre?</h3>
+        <p>A szolgáltatás díját készpénzben, bankkártyával vagy átutalással tudja kiegyenlíteni a helyszínen.</p>
+    </div>
+</div>
 
     <!-- Modal -->
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">

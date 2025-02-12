@@ -1,0 +1,623 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'San Francisco', Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: var(--background-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+:root {
+    --background-color: linear-gradient(to right, #c2dcff, #1d7dff);
+    --text-color: #333;
+    --highlight-color: #2575fc;
+    --hover-color: #6a11cb;
+}
+
+body.dark-mode {
+    --background-color: linear-gradient(to right, #1a1d22, #0f3f83);
+    --text-color: #fff;
+    --highlight-color: #1d7dff;
+    --hover-color: #1b6de0;
+}
+
+.dynamic-navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.island {
+    background-color: #a8a8a8;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    transition: transform 0.3s ease, padding 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1000px;
+}
+
+.island:hover {
+    transform: scale(1.05);
+    padding: 15px 30px;
+}
+
+.search-input {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    transition: width 0.3s ease;
+    width: 120px;
+}
+
+.search-input::placeholder {
+    color: #e0e0e0;
+}
+
+.search-icon {
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.island a {
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+    max-width: 150px;
+    text-decoration: none;
+}
+
+.island a:hover {
+    background-color: #1d7dff;
+    color: white;
+    transform: scale(1.1);
+    text-decoration: none;
+}
+
+.island a.active {
+    background-color: #1d7dff;
+    color: white;
+    text-decoration: none;
+}
+
+.island a:last-child {
+    background: #1d7dff;
+    color: white;
+    text-decoration: none;
+}
+
+.island a:last-child:hover {
+    background-color: #1b6de0;
+    transform: scale(1.1);
+    text-decoration: none;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.card-footer {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.star {
+    color: gold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.divider {
+    border: none;
+    height: 2px;
+    background-color: #ccc;
+    margin: 20px 0;
+}
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0px 20px;
+}
+
+.filter-button {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    max-width: 100px;
+    min-width: 80px;
+}
+
+.filter-icon {
+    font-size: 30px;
+    color: #ffffff;
+    margin-bottom: 5px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.filter-text {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.filter-button:hover .filter-icon {
+    transform: scale(1.2);
+    color: #1d7dff;
+}
+
+.filter-button:hover .filter-text {
+    color: #1d7dff;
+}
+
+.social-media-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: transparent;
+    border-radius: 10px;
+    margin-top: 40px;
+}
+
+.social-media-section h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.social-media-section a {
+    font-size: 2rem;
+    color: var(--highlight-color);
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.social-media-section a:hover {
+    color: var(--hover-color);
+}
+
+.faq-section {
+    background-color: transparent;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.faq-section h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: var(--text-color);
+}
+
+.faq {
+    margin-bottom: 20px;
+}
+
+.faq h3 {
+    font-size: 1.5rem;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+}
+
+.faq p {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-left: 0;
+    display: inline-block;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .island {
+        flex-direction: column;
+        padding: 10px 15px;
+    }
+
+    .island a {
+        width: 100%;
+        max-width: none;
+    }
+
+    .search-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* ------------------------------------------------------------------------------------------------ APPOINTMENTSTYLE */
+
+.appointments-title {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.new-appointment-button {
+    background-color: #ffffff;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: block;
+    margin: 0 auto 2rem;
+    text-decoration: none;
+    min-width: 150px;
+    max-width: 250px;
+}
+
+.new-appointment-button:hover {
+    background-color: #45a049;
+    color: white;
+    transform: scale(1.05);
+}
+
+.new-appointment-container {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.appointment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.appointment-card {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.appointment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.appointment-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #1d7dff;
+    padding-bottom: 0.5rem;
+}
+
+.appointment-details {
+    margin-bottom: 1rem;
+}
+
+.appointment-date, .appointment-time {
+    font-weight: bold;
+    color: #1d7dff;
+}
+
+.appointment-description {
+    color: #666;
+    font-style: italic;
+}
+
+.delete-button, .rate-button {
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.delete-button {
+    background-color: #ff4d4d;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+.appointment-header i, .appointment-details i {
+    margin-right: 0.5rem;
+    color: #1d7dff;
+}
+
+.delete-button i {
+    margin-right: 0.3rem;
+}
+
+.rate-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.rate-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.rate-button i {
+    margin-right: 5px;
+}
+
+.appointments-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.appointments-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.appointments-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.appointments-container li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.appointments-container li:last-child {
+    border-bottom: none;
+}
+
+/* ------------------------------------------------------------------------------------------------ ACCOUNTSTYLE */
+
+.account-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.account-container:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    transform: translate(-50%, -55%);
+}
+
+.account-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 2em;
+}
+
+.account-details {
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.detail-item:hover {
+    background-color: #f0f0f0;
+}
+
+.detail-item label {
+    font-weight: bold;
+    color: #555;
+}
+
+.account-actions {
+    text-align: center;
+}
+
+.account-actions .btn {
+    margin: 10px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+.account-actions .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.account-actions .btn-primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.account-actions .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.account-actions .btn-danger:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+/* ------------------------------------------------------------------------------------------------ MODALSTYLE */
+
+#dataModal .modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+#dataModal .modal-header {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    color: #fff;
+    padding: 20px;
+    border-bottom: none;
+}
+
+#dataModal .modal-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+#dataModal .btn-close {
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#dataModal .modal-body {
+    padding: 30px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    color: #333;
+    text-align: justify;
+    display: flex;
+    gap: 20px;
+}
+
+#dataModal .modal-body .content {
+    flex: 1;
+}
+
+#dataModal .modal-body .calendar {
+    flex: 1;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#dataModal .modal-footer {
+    background-color: #f1f1f1;
+    border-top: none;
+    padding: 20px;
+}
+
+#dataModal .btn-secondary {
+    background-color: #2575fc;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+#dataModal .btn-secondary:hover {
+    background-color: #6a11cb;
+    transform: scale(1.05);
+}
+
+.calendar-table {
+    width: 100%;
+    text-align: center;
+}
+
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+  }
+  
+  .rating input {
+    display: none;
+  }
+  
+  .rating label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+  }
+  
+  .rating input:checked ~ label,
+  .rating input:hover ~ label {
+    color: #ffc107;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/* ------------------------------------------------------------------------------------------------ MODALSTYLE */

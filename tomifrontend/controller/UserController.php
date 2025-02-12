@@ -3,35 +3,9 @@ require_once '../models/User.php';
 require_once '../database.php'; // Database connection
 session_start();
 
-session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: index.php');
-    exit();
-}
-
-class UserController {
-    static function registerUser($request){
-        $userArray = $request->getBody();
-
-        $user = new User($userArray['database'], $userArray['id'], $userArray['name'], $userArray['email'], $userArray['phone'], $userArray['password']);
-        $response = UserService::register($user);
-
-        return $response;
-    }
-
-    static function loginUser($request){
-        $userArray = $request->getBody();
-
-        $user = new User($userArray['database'], $userArray['id'], $userArray['name'], $userArray['email'], $userArray['phone'], $userArray['password']);
-        $response = UserService::login($user);
-
-        return $response;
-    }
-}
-/* $action = isset($_GET["action"]) ? $_GET["action"] : null;
+$action = isset($_GET["action"]) ? $_GET["action"] : null;
 
 $userModel = new User($db);
-
 
 if ($action === 'login') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,7 +19,7 @@ if ($action === 'login') {
                 'email' => $user['email'],
                 'phone' => $user['phone']
             ];
-            header('Location: ../views/landing.php');
+            header('Location: ../views/mainpage.php');
             exit(); // Ne felejtsd el az exit() hívást az átirányítás után
         } else {
             echo "Invalid credentials!";
@@ -58,13 +32,6 @@ if ($action === 'login') {
         $phone = $_POST['phone'];
         $password = $_POST['password'];
 
-<<<<<<< Updated upstream:teszt/controller/UserController.php
-    if ($userModel->register($name, $email, $phone, $password)) {
-        header('Location: ../index.php'); // Redirect to login page after registration
-        exit(); // Ne felejtsd el az exit() hívást az átirányítás után
-    } else {
-        echo "Registration failed!";
-=======
         if ($userModel->register($name, $email, $phone, $password)) {
             header('Location: ../views/index.php'); // Redirect to login page after registration
             exit(); // Ne felejtsd el az exit() hívást az átirányítás után
@@ -85,7 +52,6 @@ if ($action === 'login') {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to delete appointment']);
         }
->>>>>>> Stashed changes:tomifrontend/controller/UserController.php
     }
-} */
+}
 ?>

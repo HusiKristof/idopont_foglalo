@@ -16,10 +16,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/explore.css">
+    <link rel="stylesheet" href="../css/mainstyle.css">
     <title>Fiók</title>
 </head>
 <body>
+<button id="theme-toggle" class="btn btn-secondary" style="position: fixed; top: 10px; right: 10px;">Light Mode</button>
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">
@@ -35,7 +36,7 @@
                 <span>Felfedezés</span>
             </a>
             
-            <a href="/appointments/appointments.html">
+            <a href="appointments.php">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Időpontjaim</span>
             </a>
@@ -98,7 +99,8 @@
     </div>
 </div>
 
-<script src="../js/accountscript.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../js/mainscript.js"></script>
 </body>
 </html>
 
