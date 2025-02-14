@@ -27,5 +27,4 @@ class Rating {
 $database = new PDO("mysql:host=$host;port=$port;dbname=$dbName;charset=utf8mb4", $user, $pass);
 $rating = new Rating($database);
 $ratings = $rating->getAllRatings();
-
 ?>
