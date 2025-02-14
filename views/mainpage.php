@@ -1,12 +1,17 @@
 <?php
+require_once '../models/rating.php';
+
 session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: index.php'); // Redirect to login if not logged in
     exit();
 }
 
+$ratings = $ratings ?? [];
+
 // Get user information from the session
 $user = $_SESSION['user'];
+$ratings = array_column($ratings, 'average_rating', 'provider_id');
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +79,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>pacekbarber</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 4.8
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[1] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
@@ -86,7 +92,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>igne</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 4.5
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[2] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
@@ -98,7 +105,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>nemtom</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 4.8
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[3] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
@@ -110,7 +118,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>barberpro</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 4.9
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[4] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
@@ -122,7 +131,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>husi kristof futyi service</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 6
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[5] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
@@ -134,7 +144,8 @@ $user = $_SESSION['user'];
                     <div class="card-footer">
                         <span>sigma boy orvosi</span>
                         <span class="star">
-                            <i class="fa fa-star"></i> 1
+                            <i class="fa fa-star"></i>
+                            <span><?php echo htmlspecialchars(number_format($ratings[6] ,1 ?? 'N/A')); ?></span>
                         </span>
                     </div>
                 </div>
