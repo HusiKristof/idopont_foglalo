@@ -621,3 +621,29 @@ body.dark-mode {
 }
 
 /* ------------------------------------------------------------------------------------------------ MODALSTYLE */
+
+
+.add-service-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.add-service-btn {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    background-color: #1d7dff;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.add-service-btn:hover {
+    transform: scale(1.05);
+    background-color: #1b6de0;
+}
+
+.add-service-btn i {
+    margin-right: 8px;
+}
