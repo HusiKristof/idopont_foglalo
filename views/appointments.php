@@ -94,7 +94,6 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="modal-body">
         <input type="hidden" id="appointment-id" value="">
         <input type="hidden" id="provider-id" value="">
-        <input type="hidden" id="appointment-date" value="">
         <div class="rating">
           <input type="radio" name="rating" id="rating-5" value="5"><label for="rating-5"><i class="fas fa-star"></i></label>
           <input type="radio" name="rating" id="rating-4" value="4"><label for="rating-4"><i class="fas fa-star"></i></label>
