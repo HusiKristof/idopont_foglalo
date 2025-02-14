@@ -1,6 +1,10 @@
 $(document).ready(function() {
     // Ensure userId is set correctly from the body data attribute
-    var userId = $('body').data('user-id');
+    if (typeof window.userId !== 'undefined') {
+        userId = window.userId;
+    } else {
+        userId = $('body').data('user-id');
+    }
     console.log('User ID:', userId);
 
     $('.rate-button').on('click', function() {
@@ -20,25 +24,14 @@ $(document).ready(function() {
         var rating = $('input[name="rating"]:checked').val();
         var appointmentId = $('#appointment-id').val();
         var providerId = $('#provider-id').val();
-
-        if (!userId || !appointmentId || !providerId || !rating) {
-            console.error('Missing required fields:', {
-                userId: userId,
-                appointmentId: appointmentId,
-                providerId: providerId,
-                rating: rating
-            });
-            alert('Please fill in all the required fields.');
-            return;
-        }
-
+    
         console.log('Sending data:', {
             user_id: userId,
             appointment_id: appointmentId,
             provider_id: providerId,
             rating: rating
         });
-
+    
         $.ajax({
             url: '../controller/AppointmentController.php?action=save_rating',
             type: 'POST',
@@ -49,9 +42,13 @@ $(document).ready(function() {
                 rating: rating
             },
             success: function(response) {
+                console.log('Raw response:', response); // Log the raw response
                 try {
-                    console.log('Raw response:', response);
-                    var res = JSON.parse(response);
+                    // Ensure response is a string before trimming
+                    const responseText = typeof response === 'string' ? response : JSON.stringify(response);
+                    const trimmedResponse = responseText.trim(); // Trim the response
+                    console.log('Trimmed response:', trimmedResponse); // Log the trimmed response
+                    const res = JSON.parse(trimmedResponse); // Parse the trimmed response
                     if (res.status === 'success') {
                         alert('Rating saved successfully');
                         $('#ratingModal').modal('hide');
@@ -59,14 +56,13 @@ $(document).ready(function() {
                         alert('Error saving rating: ' + res.message);
                     }
                 } catch (e) {
-                    console.error('Error parsing JSON response:', e);
-                    console.error('Response:', response);
-                    alert('Error saving rating');
+                    console.error('Error parsing JSON:', e);
+                    alert('Error parsing server response');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error saving rating:', error);
-                alert('Error saving rating');
+                console.error('Booking error:', error);
+                alert('Error booking appointment: ' + error);
             }
         });
     });
@@ -414,7 +410,7 @@ $(document).ready(function() {
     });
 
 //ratings
-$(document).ready(function() {
+/* $(document).ready(function() {
     // Ensure userId is set correctly from the body data attribute
     if (typeof window.userId !== 'undefined') {
         userId = window.userId;
@@ -426,16 +422,13 @@ $(document).ready(function() {
     $('.rate-button').on('click', function() {
         var appointmentId = $(this).data('appointment-id');
         var providerId = $(this).data('provider-id');
-        var serviceId = $(this).data('service-id'); // Ensure serviceId is set
 
         $('#appointment-id').val(appointmentId);
         $('#provider-id').val(providerId);
-        $('#service-id').val(serviceId); // Set serviceId
 
         console.log('Rate button clicked:', {
             appointmentId: appointmentId,
             providerId: providerId,
-            serviceId: serviceId,
             rating: rating
         });
     });
@@ -444,14 +437,12 @@ $(document).ready(function() {
         var rating = $('input[name="rating"]:checked').val();
         var appointmentId = $('#appointment-id').val();
         var providerId = $('#provider-id').val();
-        var serviceId = $('#service-id').val(); // Get serviceId
 
-        if (!userId || !appointmentId || !providerId || !serviceId || !rating) {
+        if (!userId || !appointmentId || !providerId || !rating) {
             console.error('Missing required fields:', {
                 userId: userId,
                 appointmentId: appointmentId,
                 providerId: providerId,
-                serviceId: serviceId,
                 rating: rating
             });
             alert('Please fill in all the required fields.');
@@ -462,7 +453,6 @@ $(document).ready(function() {
             user_id: userId,
             appointment_id: appointmentId,
             provider_id: providerId,
-            service_id: serviceId, // Include serviceId
             rating: rating
         });
 
@@ -473,30 +463,19 @@ $(document).ready(function() {
                 user_id: userId,
                 appointment_id: appointmentId,
                 provider_id: providerId,
-                service_id: serviceId, // Include serviceId
                 rating: rating
             },
             success: function(response) {
-                try {
-                    console.log('Raw response:', response);
-                    var res = JSON.parse(response);
+                    //console.log('Raw response:', response);
+                    const res = JSON.parse(response);
                     if (res.status === 'success') {
                         alert('Rating saved successfully');
                         $('#ratingModal').modal('hide');
                     } else {
                         alert('Error saving rating: ' + res.message);
                     }
-                } catch (e) {
-                    console.error('Error parsing JSON response:', e);
-                    console.error('Response:', response);
-                    alert('Error saving rating');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error saving rating:', error);
-                alert('Error saving rating');
             }
         });
     });
-});
-});
+}); */
+}); 
