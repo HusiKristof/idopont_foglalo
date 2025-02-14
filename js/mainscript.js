@@ -7,6 +7,26 @@ $(document).ready(function() {
     }
     console.log('User ID:', userId);
 
+    const appointmentCards = document.querySelectorAll('.appointment-card');
+
+    appointmentCards.forEach(card => {
+        const dateElement = card.querySelector('.appointment-date');
+        const timeElement = card.querySelector('.appointment-time');
+        const rateButton = card.querySelector('.rate-button');
+
+        if (dateElement && timeElement && rateButton) {
+            // Combine date and time to create a full appointment date
+            const appointmentDate = new Date(`${dateElement.textContent} ${timeElement.textContent}`);
+            const currentDate = new Date();
+
+            // Check if the appointment is in the future
+            if (appointmentDate > currentDate) {
+                // Hide the rate button if the appointment is in the future
+                rateButton.style.display = 'none';
+            }
+        }
+    });
+
     $('.rate-button').on('click', function() {
         var appointmentId = $(this).data('appointment-id');
         var providerId = $(this).data('provider-id');
@@ -408,74 +428,4 @@ $(document).ready(function() {
             });
         });
     });
-
-//ratings
-/* $(document).ready(function() {
-    // Ensure userId is set correctly from the body data attribute
-    if (typeof window.userId !== 'undefined') {
-        userId = window.userId;
-    } else {
-        userId = $('body').data('user-id');
-    }
-    console.log('User ID:', userId);
-
-    $('.rate-button').on('click', function() {
-        var appointmentId = $(this).data('appointment-id');
-        var providerId = $(this).data('provider-id');
-
-        $('#appointment-id').val(appointmentId);
-        $('#provider-id').val(providerId);
-
-        console.log('Rate button clicked:', {
-            appointmentId: appointmentId,
-            providerId: providerId,
-            rating: rating
-        });
-    });
-
-    $('#save-rating').on('click', function() {
-        var rating = $('input[name="rating"]:checked').val();
-        var appointmentId = $('#appointment-id').val();
-        var providerId = $('#provider-id').val();
-
-        if (!userId || !appointmentId || !providerId || !rating) {
-            console.error('Missing required fields:', {
-                userId: userId,
-                appointmentId: appointmentId,
-                providerId: providerId,
-                rating: rating
-            });
-            alert('Please fill in all the required fields.');
-            return;
-        }
-
-        console.log('Sending data:', {
-            user_id: userId,
-            appointment_id: appointmentId,
-            provider_id: providerId,
-            rating: rating
-        });
-
-        $.ajax({
-            url: '../controller/AppointmentController.php?action=save_rating',
-            type: 'POST',
-            data: {
-                user_id: userId,
-                appointment_id: appointmentId,
-                provider_id: providerId,
-                rating: rating
-            },
-            success: function(response) {
-                    //console.log('Raw response:', response);
-                    const res = JSON.parse(response);
-                    if (res.status === 'success') {
-                        alert('Rating saved successfully');
-                        $('#ratingModal').modal('hide');
-                    } else {
-                        alert('Error saving rating: ' + res.message);
-                    }
-            }
-        });
-    });
-}); */
 }); 
