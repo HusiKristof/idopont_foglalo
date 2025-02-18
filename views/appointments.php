@@ -135,6 +135,12 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="../js/mainscript.js"></script>
+    <script src="../js/ratings.js"></script>
+    <script src="../js/booking.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/service.js"></script>
 </body>
 </html>

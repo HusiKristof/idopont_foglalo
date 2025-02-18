@@ -14,13 +14,14 @@ if ($action === 'login') {
         $user = $userModel->login($email, $password);
         if ($user) {
             $_SESSION['user'] = [
-                'id' => $user['id'], // Az id érték beállítása
+                'id' => $user['id'],
                 'name' => $user['name'],
                 'email' => $user['email'],
-                'phone' => $user['phone']
+                'phone' => $user['phone'],
+                'role' => $user['role']  // Added role to session
             ];
             header('Location: ../views/mainpage.php');
-            exit(); // Ne felejtsd el az exit() hívást az átirányítás után
+            exit();
         } else {
             echo "Invalid credentials!";
         }
@@ -33,8 +34,8 @@ if ($action === 'login') {
         $password = $_POST['password'];
 
         if ($userModel->register($name, $email, $phone, $password)) {
-            header('Location: ../index.php'); // Redirect to login page after registration
-            exit(); // Ne felejtsd el az exit() hívást az átirányítás után
+            header('Location: ../index.php');
+            exit();
         } else {
             echo "Registration failed!";
         }

@@ -1,5 +1,6 @@
 <?php
 require_once '../models/rating.php';
+require_once '../database.php';
 
 session_start();
 if (!isset($_SESSION['user'])) {
@@ -69,89 +70,47 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
         </div>
     </div>
 
+    <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
+        <div class="add-service-container">
+    <button type="button" class="btn btn-primary add-service-btn" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+        <i class="fas fa-plus"></i> Add New Service
+    </button>
+</div>
+<?php endif; ?>
+
     <hr class="divider">
 
     <div class="container mt-4">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="1">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUC0xWf3D5qq6AvXcyymZePQ9dYbsagNc7ZQ&s" alt="pacek">
-                    <div class="card-footer">
-                        <span>pacekbarber</span>
-                        <span class="star">
-                            <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[1] ,1 ?? 'N/A')); ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
+    <div class="row">
+        <?php
+        // Fetch all providers from database
+        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+                            FROM providers p 
+                            LEFT JOIN ratings r ON p.id = r.provider_id 
+                            GROUP BY p.id");
+        $stmt->execute();
+        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        foreach ($providers as $provider): ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="2">
-                    <img src="https://i.scdn.co/image/ab67616d0000b273bdee5a05e95ec7372a1a36b1" alt="igne">
+                <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
+                    <?php if (isset($provider['image_path']) && !empty($provider['image_path'])): ?>
+                        <img src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
+                    <?php else: ?>
+                        <img src="https://via.placeholder.com/300" alt="Default image">
+                    <?php endif; ?>
                     <div class="card-footer">
-                        <span>igne</span>
+                        <span><?php echo htmlspecialchars($provider['name']); ?></span>
                         <span class="star">
                             <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[2] ,1 ?? 'N/A')); ?></span>
+                            <span><?php echo number_format($provider['average_rating'], 1); ?></span>
                         </span>
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="3">
-                    <img src="https://images.euronics.hu/product_images/800x600/resize/9536035389470_azq0bd3u.jpg?v=2" alt ="nemtom">
-                    <div class="card-footer">
-                        <span>nemtom</span>
-                        <span class="star">
-                            <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[3] ,1 ?? 'N/A')); ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="4">
-                    <img src="https://i.redd.it/jbxpe4olasb11.jpg" alt="barberpro">
-                    <div class="card-footer">
-                        <span>barberpro</span>
-                        <span class="star">
-                            <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[4] ,1 ?? 'N/A')); ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="5">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Model_T_Casino_interior.jpg/1200px-Model_T_Casino_interior.jpg" alt="futyi">
-                    <div class="card-footer">
-                        <span>husi kristof futyi service</span>
-                        <span class="star">
-                            <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[5] ,1 ?? 'N/A')); ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card" data-id="6">
-                    <img src="https://s.24.hu/app/uploads/2016/08/bolnici_31-1-1024x584.jpg" alt="sigma">
-                    <div class="card-footer">
-                        <span>sigma boy orvosi</span>
-                        <span class="star">
-                            <i class="fa fa-star"></i>
-                            <span><?php echo htmlspecialchars(number_format($ratings[6] ,1 ?? 'N/A')); ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endforeach; ?>
     </div>
+</div>
 
     <hr class="divider">
 
@@ -210,7 +169,13 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="../js/mainscript.js"></script>
+    <script src="../js/ratings.js"></script>
+    <script src="../js/booking.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/service.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
@@ -219,5 +184,64 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
     window.providerId = <?php echo json_encode($provider_id ?? null); ?>;
 </script>
+
+<?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
+<!-- Add Service Modal -->
+<div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addServiceModalLabel">Add New Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addServiceForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="serviceType" class="form-label">Service Type</label>
+                        <select class="form-control" id="serviceType" name="type" required>
+                            <option value="haircut">Haircut</option>
+                            <option value="education">Education</option>
+                            <option value="medical">Medical</option>
+                            <option value="administrative">Administrative</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceName" class="form-label">Service Name</label>
+                        <input type="text" class="form-control" id="serviceName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="workingHours" class="form-label">Working Hours</label>
+                        <input type="text" class="form-control" id="workingHours" name="working_hours" placeholder="e.g. Mon-Fri 9:00-17:00" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price (HUF)</label>
+                        <input type="number" class="form-control" id="price" name="price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Duration (minutes)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceImage" class="form-label">Service Image</label>
+                        <input type="file" class="form-control" id="serviceImage" name="image" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveService">Save Service</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 </body>
 </html>
