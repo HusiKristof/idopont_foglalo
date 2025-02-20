@@ -50,6 +50,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
     }
+} elseif ($action === 'update_status') {
+    $appointmentId = $_POST['appointment_id'];
+    $status = $_POST['status'];
+
+    $stmt = $db->prepare("UPDATE appointments SET status = ? WHERE id = ?");
+    if ($stmt->execute([$status, $appointmentId])) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to update status']);
+    }
+} elseif ($action === 'delete_appointment') {
+    $appointmentId = $_POST['appointment_id'];
+    $stmt = $db->prepare("DELETE FROM appointments WHERE id = ?");
+    if ($stmt->execute([$appointmentId])) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to delete appointment']);
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
 }
