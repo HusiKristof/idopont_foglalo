@@ -15,4 +15,16 @@ try {
     echo "Kapcsolódás sikertelen: " . $e->getMessage();
     exit();
 }
+
+try {
+    // PDO objektum létrehozása
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbName;charset=utf8mb4", $user, $pass);
+
+    // HIBA: $db helyett $pdo-t kellene használni
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo "Kapcsolódás sikertelen: " . $e->getMessage();
+    exit();
+}
+
 ?>

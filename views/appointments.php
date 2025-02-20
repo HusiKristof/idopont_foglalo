@@ -10,19 +10,28 @@ if (!isset($_SESSION['user'])) {
 $user = $_SESSION['user'];
 $userId = $user['id'];
 
+// Feltételezve, hogy van egy adatbázis kapcsolat $db
+$appointmentId = $_GET['appointment_id'] ?? null;
+
+if ($appointmentId) {
+    $stmt = $db->prepare("SELECT * FROM appointments WHERE id = ?");
+    $stmt->execute([$appointmentId]);
+    $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
+} 
+
 // Ha a felhasználó admin, akkor csak a saját szolgáltatásaihoz tartozó időpontokat jelenítsük meg
 if ($user['role'] === 'admin') {
-    $query = "SELECT a.id, a.appointment_date, u.name AS user_name, p.name AS provider_name, p.type AS provider_type 
-              FROM appointments a 
-              JOIN users u ON a.user_id = u.id 
-              JOIN providers p ON a.provider_id = p.id 
-              WHERE p.user_id = ?"; // Csak az admin saját szolgáltatásaihoz tartozó időpontok
+    $query = "SELECT a.id, a.appointment_date, u.name AS user_name, p.name AS provider_name, p.type AS provider_type, a.status 
+          FROM appointments a 
+          JOIN users u ON a.user_id = u.id 
+          JOIN providers p ON a.provider_id = p.id 
+          WHERE p.user_id = ?"; // Csak az admin saját szolgáltatásaihoz tartozó időpontok
 } else {
     // Ha a felhasználó nem admin, akkor a saját időpontjait jelenítsük meg
-    $query = "SELECT a.id, a.appointment_date, p.name AS provider_name, p.type AS provider_type 
-              FROM appointments a 
-              JOIN providers p ON a.provider_id = p.id 
-              WHERE a.user_id = ?";
+    $query = "SELECT a.id, a.appointment_date, a.status, p.name AS provider_name, p.type AS provider_type 
+          FROM appointments a 
+          JOIN providers p ON a.provider_id = p.id 
+          WHERE a.user_id = ?";
 }
 
 $stmt = $db->prepare($query);
@@ -66,6 +75,10 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
             </a>
+
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
@@ -76,6 +89,9 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="appointment-header">
                         <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> 
                         <?php echo htmlspecialchars($appointment['provider_name']); ?>
+                        <span style="float: right;">
+                            <?php echo isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A' ; ?>
+                        </span>
                     </div>
                     <div class="appointment-details">
                         <p>
@@ -113,31 +129,31 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Rating Modal -->
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" id="dataModal">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ratingModalLabel">Szolgáltatás értékelése</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="dataModal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingModalLabel">Szolgáltatás értékelése</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="appointment-id" value="">
+                <input type="hidden" id="provider-id" value="">
+                <div class="rating">
+                    <input type="radio" name="rating" id="rating-5" value="5"><label for="rating-5"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="rating-4" value="4"><label for="rating-4"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="rating-3" value="3"><label for="rating-3"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="rating-2" value="2"><label for="rating-2"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="rating-1" value="1"><label for="rating-1"><i class="fas fa-star"></i></label>
                 </div>
-                <div class="modal-body">
-                    <input type="hidden" id="appointment-id" value="">
-                    <input type="hidden" id="provider-id" value="">
-                    <div class="rating">
-                        <input type="radio" name="rating" id="rating-5" value="5"><label for="rating-5"><i class="fas fa-star"></i></label>
-                        <input type="radio" name="rating" id="rating-4" value="4"><label for="rating-4"><i class="fas fa-star"></i></label>
-                        <input type="radio" name="rating" id="rating-3" value="3"><label for="rating-3"><i class="fas fa-star"></i></label>
-                        <input type="radio" name="rating" id="rating-2" value="2"><label for="rating-2"><i class="fas fa-star"></i></label>
-                        <input type="radio" name="rating" id="rating-1" value="1"><label for="rating-1"><i class="fas fa-star"></i></label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-                    <button type="button" class="btn btn-secondary" id="save-rating">Mentés</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                <button type="button" class="btn btn-secondary" id="save-rating">Mentés</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -161,6 +177,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
         var appointmentId = <?php echo json_encode($_SESSION['user']['id']); ?>;
+        window.providerId = <?php echo json_encode($appointment['provider_id'] ?? null); ?>;
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

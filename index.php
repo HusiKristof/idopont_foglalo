@@ -72,7 +72,7 @@
 
                 <a href="#">Elfelejtetted a jelszavad?</a>
                 <button type="submit" class="btn" value="signIn" name="signIn">Bejelentkezés</button>
-            </action=>
+            </form>
         </div>
         <div class="toggle-container">
             <div class="toggle">

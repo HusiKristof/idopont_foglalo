@@ -30,64 +30,37 @@ $(document).ready(function() {
         }
     });
 
-    $('.rate-button').on('click', function() {
-        var appointmentId = $(this).data('appointment-id');
-        var providerId = $(this).data('provider-id');
-
-        $('#appointment-id').val(appointmentId);
-        $('#provider-id').val(providerId);
-
-        console.log('Rate button clicked:', {
-            appointmentId: appointmentId,
-            providerId: providerId
-        });
-    });
-
-    $('#save-rating').on('click', function() {
-        var rating = $('input[name="rating"]:checked').val();
-        var appointmentId = $('#appointment-id').val();
-        var providerId = $('#provider-id').val();
-    
-        console.log('Sending data:', {
-            user_id: userId,
-            appointment_id: appointmentId,
-            provider_id: providerId,
-            rating: rating
+        $('.rate-button').on('click', function() {
+            var appointmentId = $(this).data('appointment-id');
+            var providerId = $(this).data('provider-id');
+            $('#ratingModal #appointment-id').val(appointmentId);
+            $('#ratingModal #provider-id').val(providerId);
         });
     
-        $.ajax({
-            url: '../controller/AppointmentController.php?action=save_rating',
-            type: 'POST',
-            data: {
-                user_id: userId,
-                appointment_id: appointmentId,
-                provider_id: providerId,
-                rating: rating
-            },
-            success: function(response) {
-                console.log('Raw response:', response); // Log the raw response
-                try {
-                    // Ensure response is a string before trimming
-                    const responseText = typeof response === 'string' ? response : JSON.stringify(response);
-                    const trimmedResponse = responseText.trim(); // Trim the response
-                    console.log('Trimmed response:', trimmedResponse); // Log the trimmed response
-                    const res = JSON.parse(trimmedResponse); // Parse the trimmed response
-                    if (res.status === 'success') {
-                        showAlert('Sikeresen elküldted az értékelést!', 'success');
+        $('#save-rating').on('click', function() {
+            var appointmentId = $('#ratingModal #appointment-id').val();
+            var providerId = $('#ratingModal #provider-id').val();
+            var rating = $('input[name="rating"]:checked').val();
+    
+            $.ajax({
+                url: '../controller/appointmentController.php?action=save_rating',
+                type: 'POST',
+                data: {
+                    appointment_id: appointmentId,
+                    provider_id: providerId,
+                    rating: rating
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showAlert('Sikeresen mentetted az értékelést!', 'success');
                         $('#ratingModal').modal('hide');
-                        location.reload();
                     } else {
-                        showAlert('Error saving rating: ' + res.message, 'error');
+                        showAlert('Hiba történt az értékelés mentése közben.', 'error');
                     }
-                } catch (e) {
-                    console.error('Error parsing JSON:', e);
-                    showAlert('Error parsing server response', 'error');
+                },
+                error: function(xhr, status, error) {
+                    showAlert('Hiba történt az értékelés mentése közben.', 'error');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Booking error:', error);
-                showAlert('Error booking appointment: ' + error, 'error');
-            }
+            });
         });
-    });
 });

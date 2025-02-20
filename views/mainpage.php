@@ -12,6 +12,7 @@ $ratings = $ratings ?? [];
 
 // Get user information from the session
 $user = $_SESSION['user'];
+$provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
 ?>
 
@@ -51,6 +52,10 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
             <a href="account.php">
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
+            </a>
+
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
     </div>

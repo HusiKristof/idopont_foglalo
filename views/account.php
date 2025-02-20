@@ -41,11 +41,14 @@
                 <span>Időpontjaim</span>
             </a>
             
-            <a href="">
+            <a href="" class="active">
                 <i class="fa fa-user"></i>
                 <span>Fiók</span>
             </a>
 
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
