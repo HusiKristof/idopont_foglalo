@@ -8,8 +8,36 @@ if (!isset($_SESSION['user'])) {
 }
 
 $user = $_SESSION['user'];
-$userId = $_SESSION['user']['id'];
-$query = "SELECT a.id, a.appointment_date, p.name AS provider_name, p.type AS provider_type, p.id AS provider_id FROM appointments a JOIN providers p ON a.provider_id = p.id WHERE a.user_id = ?";
+$userId = $user['id'];
+
+// Feltételezve, hogy van egy adatbázis kapcsolat $db
+$appointmentId = $_GET['appointment_id'] ?? null;
+
+if ($appointmentId) {
+    $stmt = $db->prepare("SELECT * FROM appointments WHERE id = ?");
+    $stmt->execute([$appointmentId]);
+    $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
+} 
+
+// If user is admin
+if ($user['role'] === 'admin') {
+    $query = "SELECT a.id, a.appointment_date, u.name AS user_name, 
+             p.name AS provider_name, p.type AS provider_type, 
+             a.status, a.provider_id 
+             FROM appointments a 
+             JOIN users u ON a.user_id = u.id 
+             JOIN providers p ON a.provider_id = p.id 
+             WHERE p.user_id = ?";
+} else {
+    // If user is not admin
+    $query = "SELECT a.id, a.appointment_date, a.status, 
+             p.name AS provider_name, p.type AS provider_type,
+             a.provider_id
+             FROM appointments a 
+             JOIN providers p ON a.provider_id = p.id 
+             WHERE a.user_id = ?";
+}
+
 $stmt = $db->prepare($query);
 $stmt->execute([$userId]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,7 +49,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/mainstyle.css">
     <title>Időpontjaim</title>
 </head>
@@ -52,6 +80,9 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
             </a>
 
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
@@ -60,7 +91,11 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php foreach ($appointments as $appointment): ?>
                 <div class="appointment-card">
                     <div class="appointment-header">
-                        <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> <?php echo htmlspecialchars($appointment['provider_name']); ?>
+                        <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> 
+                        <?php echo htmlspecialchars($appointment['provider_name']); ?>
+                        <span style="float: right;">
+                            <?php echo isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A' ; ?>
+                        </span>
                     </div>
                     <div class="appointment-details">
                         <p>
@@ -69,22 +104,62 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <i class="far fa-clock"></i>
                             <span class="appointment-time"><?php echo htmlspecialchars(date('H:i', strtotime($appointment['appointment_date']))); ?></span>
                         </p>
+                        <?php if ($user['role'] === 'admin'): ?>
+                            <p>
+                                <i class="fas fa-user"></i>
+                                <span class="user-name"><?php echo htmlspecialchars($appointment['user_name']); ?></span>
+                            </p>
+                        <?php endif; ?>
                     </div>
+                    <?php if ($user['role'] === 'admin'): ?>
+                      <button class="confirm-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
+                      <button class="reject-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
+                    <?php endif; ?>
                     <button class="delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash-alt"></i> Törlés</button>
-                    <button class="rate-button" data-appointment-id="<?php echo $appointment['id']; ?>" data-provider-id="<?php echo $appointment['provider_id']; ?>" data-bs-toggle="modal" data-bs-target="#ratingModal"><i class="fas fa-star"></i> Értékelés</button>
+                    <?php if ($user['role'] !== 'admin'): ?>
+                        <button type="button" 
+                                class="btn btn-secondary rate-button" 
+                                data-appointment-id="<?php echo htmlspecialchars($appointment['id']); ?>"
+                                data-provider-id="<?php echo htmlspecialchars($appointment['provider_id']); ?>"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#ratingModal">
+                            Értékelés
+                        </button>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
 
-        <div class="new-appointment-container">
-            <a href="mainpage.php" class="new-appointment-button">
-                <i class="fas fa-plus-circle"></i> Új időpont foglalása
-            </a>
-        </div>
+        <?php if ($user['role'] !== 'admin'): ?>
+            <div class="new-appointment-container">
+                <a href="mainpage.php" class="new-appointment-button">
+                    <i class="fas fa-plus-circle"></i> Új időpont foglalása
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 
-    <!-- Rating Modal -->
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content" id="dataModal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Törlés megerősítése</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Biztosan törölni szeretnéd?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+            <button type="button" class="btn btn-danger btn-delete-confirm">Törlés</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" id="dataModal">
       <div class="modal-header">
@@ -110,31 +185,19 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content" id="dataModal">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">Törlés megerősítése</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Biztosan törölni szeretnéd?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-            <button type="button" class="btn btn-danger btn-delete-confirm">Törlés</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script>
-  var userId = <?php echo json_encode($_SESSION['user']['id']); ?>;
-  $('body').data('user-id', userId);
-</script>
+        window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="../js/mainscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/ratings.js"></script>
+    <script src="../js/booking.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/adminAppointment.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/service.js"></script>
 </body>
 </html>

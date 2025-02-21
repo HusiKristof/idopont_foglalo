@@ -12,6 +12,7 @@ $ratings = $ratings ?? [];
 
 // Get user information from the session
 $user = $_SESSION['user'];
+$provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
 ?>
 
@@ -51,6 +52,10 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
             <a href="account.php">
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
+            </a>
+
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
     </div>
@@ -169,7 +174,13 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="../js/mainscript.js"></script>
+    <script src="../js/ratings.js"></script>
+    <script src="../js/booking.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/service.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>

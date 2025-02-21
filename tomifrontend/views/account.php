@@ -41,11 +41,14 @@
                 <span>Időpontjaim</span>
             </a>
             
-            <a href="">
+            <a href="" class="active">
                 <i class="fa fa-user"></i>
                 <span>Fiók</span>
             </a>
 
+            <a href="../models/logout.php" class="logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
@@ -92,7 +95,7 @@
                 <input type="text" id="edit-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
             </div>
             <div class="account-actions">
-                <button type="submit" class="btn btn-primary">Mentés</button>
+                <button type="submit" class="btn btn-primary" id="save">Mentés</button>
                 <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">Mégse</button>
             </div>
         </form>
@@ -100,7 +103,13 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../js/mainscript.js"></script>
+    <script src="../js/ratings.js"></script>
+    <script src="../js/booking.js"></script>
+    <script src="../js/account.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/alert.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/service.js"></script>
 </body>
 </html>
 

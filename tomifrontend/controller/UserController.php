@@ -40,11 +40,7 @@ if ($action === 'login') {
             echo "Registration failed!";
         }
     }
-} elseif ($action === 'logout') {
-    session_destroy();
-    header('Location: ../views/login.php');
-    exit();
-} elseif ($action === 'delete_appointment') {
+}/*  elseif ($action === 'delete_appointment') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $appointmentId = $_POST['appointment_id'];
         $stmt = $db->prepare("DELETE FROM appointments WHERE id = ?");
@@ -54,5 +50,5 @@ if ($action === 'login') {
             echo json_encode(['status' => 'error', 'message' => 'Failed to delete appointment']);
         }
     }
-}
+} */
 ?>
