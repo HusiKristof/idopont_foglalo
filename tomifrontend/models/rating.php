@@ -13,17 +13,12 @@ class Rating {
     public function getAllRatings() {
         $stmt = $this->db->prepare("SELECT provider_id, AVG(rating) as average_rating FROM ratings GROUP BY provider_id");
         $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        if (!$result) {
-            print_r($this->db->errorInfo()); // Hibakeresési információ
-        }
-        return $result;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }    
     
 }
 
-// Hibakeresési információ hozzáadása
+// Create database connection without debug output
 $database = new PDO("mysql:host=$host;port=$port;dbname=$dbName;charset=utf8mb4", $user, $pass);
 $rating = new Rating($database);
 $ratings = $rating->getAllRatings();

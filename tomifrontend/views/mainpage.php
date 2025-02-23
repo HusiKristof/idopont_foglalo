@@ -1,16 +1,14 @@
 <?php
+session_start();
 require_once '../models/rating.php';
 require_once '../database.php';
 
-session_start();
 if (!isset($_SESSION['user'])) {
-    header('Location: index.php'); // Redirect to login if not logged in
+    header('Location: index.php');
     exit();
 }
 
 $ratings = $ratings ?? [];
-
-// Get user information from the session
 $user = $_SESSION['user'];
 $provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
