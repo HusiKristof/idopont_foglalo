@@ -76,7 +76,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
         <div class="add-service-container">
     <button type="button" class="btn btn-primary add-service-btn" data-bs-toggle="modal" data-bs-target="#addServiceModal">
-        <i class="fas fa-plus"></i> Add New Service
+        <i class="fas fa-plus"></i> Új Szolgáltatás Hozzáadása
     </button>
 </div>
 <?php endif; ?>
@@ -153,17 +153,12 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modalBody">
-                <div class="provider-details">
-                    <h5 name="name" id="name"></h5>
-                    <p name="description" id="description"></p>
-                    <p name="provider" id="provider"></p>
-                    <p name="duration" id="duration"></p>
-                    <p name="price" id="price"></p>
-                </div>
-                <div id="calendar"></div>
+                <!-- Provider details will be inserted here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="book">Időpont választás</button>
+                <?php if ($user['role'] !== 'admin'): ?>
+                    <button type="button" class="btn btn-secondary" id="book">Időpont választás</button>
+                <?php endif; ?>
                 <button type="button" class="btn btn-success" id="bookAppointment" style="display: none;">Foglalás</button>
             </div>
         </div>
@@ -194,53 +189,54 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addServiceModalLabel">Add New Service</h5>
+                <h5 class="modal-title" id="addServiceModalLabel">Új szolgáltatás hozzáadása</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addServiceForm" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="serviceType" class="form-label">Service Type</label>
+                        <label for="serviceType" class="form-label">Szolgáltatás típusa</label>
                         <select class="form-control" id="serviceType" name="type" required>
-                            <option value="haircut">Haircut</option>
-                            <option value="education">Education</option>
-                            <option value="medical">Medical</option>
-                            <option value="administrative">Administrative</option>
+                            <option value="haircut">Szépség</option>
+                            <option value="education">Oktatás</option>
+                            <option value="medical">Egészségügy</option>
+                            <option value="administrative">Adminisztratív</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="serviceName" class="form-label">Service Name</label>
+                        <label for="serviceName" class="form-label">Szolgáltatás neve</label>
                         <input type="text" class="form-control" id="serviceName" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
+                        <label for="description" class="form-label">Leírás</label>
                         <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="workingHours" class="form-label">Working Hours</label>
-                        <input type="text" class="form-control" id="workingHours" name="working_hours" placeholder="e.g. Mon-Fri 9:00-17:00" required>
+                        <label for="workingHours" class="form-label">Nyitvatartás</label>
+                        <input type="text" class="form-control" id="working_hours" name="working_hours" required pattern="^(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)-(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)\s([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$"placeholder="Hétfő-Péntek 09:00-17:00">
+                        <small class="form-text text-muted">Formátum: Nap-Nap ÓÓ:PP-ÓÓ:PP (például: Hétfő-Vasárnap 09:00-17:00)</small>
                     </div>
                     <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
+                        <label for="address" class="form-label">Cím</label>
                         <input type="text" class="form-control" id="address" name="address" required>
                     </div>
                     <div class="mb-3">
-                        <label for="price" class="form-label">Price (HUF)</label>
+                        <label for="price" class="form-label">Ár (HUF)</label>
                         <input type="number" class="form-control" id="price" name="price" required>
                     </div>
                     <div class="mb-3">
-                        <label for="duration" class="form-label">Duration (minutes)</label>
+                        <label for="duration" class="form-label">Időtartam (perc)</label>
                         <input type="number" class="form-control" id="duration" name="duration" required>
                     </div>
                     <div class="mb-3">
-                        <label for="serviceImage" class="form-label">Service Image</label>
+                        <label for="serviceImage" class="form-label">Szolgáltatás kép</label>
                         <input type="file" class="form-control" id="serviceImage" name="image" accept="image/*" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveService">Save Service</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Töröl</button>
+                <button type="button" class="btn btn-primary" id="saveService">Mentés</button>
             </div>
         </div>
     </div>
