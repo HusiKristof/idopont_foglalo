@@ -30,37 +30,55 @@ $(document).ready(function() {
         }
     });
 
-        $('.rate-button').on('click', function() {
-            var appointmentId = $(this).data('appointment-id');
-            var providerId = $(this).data('provider-id');
-            $('#ratingModal #appointment-id').val(appointmentId);
-            $('#ratingModal #provider-id').val(providerId);
-        });
-    
-        $('#save-rating').on('click', function() {
-            var appointmentId = $('#ratingModal #appointment-id').val();
-            var providerId = $('#ratingModal #provider-id').val();
-            var rating = $('input[name="rating"]:checked').val();
-    
-            $.ajax({
-                url: '../controller/appointmentController.php?action=save_rating',
-                type: 'POST',
-                data: {
-                    appointment_id: appointmentId,
-                    provider_id: providerId,
-                    rating: rating
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        showAlert('Sikeresen mentetted az értékelést!', 'success');
-                        $('#ratingModal').modal('hide');
-                    } else {
-                        showAlert('Hiba történt az értékelés mentése közben.', 'error');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    showAlert('Hiba történt az értékelés mentése közben.', 'error');
+    $('.rate-button').on('click', function() {
+        var appointmentId = $(this).data('appointment-id');
+        var providerId = $(this).data('provider-id');
+        console.log('Rate button clicked:', { appointmentId, providerId });
+
+        $('#ratingModal #appointment-id').val(appointmentId);
+        $('#ratingModal #provider-id').val(providerId);
+    });
+
+    $('#save-rating').on('click', function() {
+        var appointmentId = $('#ratingModal #appointment-id').val();
+        var providerId = $('#ratingModal #provider-id').val();
+        var rating = $('input[name="rating"]:checked').val();
+
+        if (!rating) {
+            alert('Please select a rating');
+            return;
+        }
+
+        console.log('Saving rating:', { appointmentId, providerId, rating });
+
+        $.ajax({
+            url: '../controller/appointmentController.php?action=save_rating',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                appointment_id: appointmentId,
+                provider_id: providerId,
+                rating: rating
+            },
+            success: function(response) {
+                console.log('Rating save response:', response);
+                if (response.status === 'success') {
+                    alert('Értékelés sikeresen mentve!');
+                    $('#ratingModal').modal('hide');
+                    // Optionally reload the page to show updated ratings
+                    location.reload();
+                } else {
+                    alert('Hiba történt az értékelés mentésekor: ' + response.message);
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error details:', {
+                    xhr: xhr.responseText,
+                    status: status,
+                    error: error
+                });
+                alert('Hiba történt az értékelés mentésekor!');
+            }
         });
+    });
 });

@@ -34,6 +34,17 @@ if ($action === 'add') {
             }
 
             if (move_uploaded_file($imageFile['tmp_name'], $targetFile)) {
+                // Add this validation before inserting the provider
+
+                $workingHours = $_POST['working_hours'];
+                if (!preg_match('/^(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)-(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)\s([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/', $workingHours)) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Invalid working hours format. Use format: Nap-Nap ÓÓ:PP-ÓÓ:PP'
+                    ]);
+                    exit;
+                }
+
                 // Insert provider data including image_path
                 $stmt = $db->prepare("INSERT INTO providers (user_id, type, description, name, working_hours, address, phone_number, price, duration, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 

@@ -1,3 +1,4 @@
+// filepath: /C:/MAMP/htdocs/husifix/2/idopont_foglalo/js/adminAppointment.js
 $(document).ready(function() {
 
     if (typeof window.userId !== 'undefined') {
@@ -16,19 +17,19 @@ $(document).ready(function() {
     // Elutasítás gomb kezelése
     $('.reject-button').on('click', function() {
         var appointmentId = $(this).data('id');
-        updateAppointmentStatus(appointmentId, 'cancelled');
+        updateAppointmentStatus(appointmentId, 'canceled'); // Corrected status
     });
 
     // Törlés gomb kezelése
     $('.delete-button').on('click', function() {
         var appointmentId = $(this).data('id');
-        deleteAppointment(appointmentId);
+        $('#deleteModal .btn-delete-confirm').data('id', appointmentId); // Set data-id on confirm button
     });
 
     // Státusz frissítése AJAX kéréssel
     function updateAppointmentStatus(appointmentId, status) {
         $.ajax({
-            url: '../controller/AppointmentController.php?action=update_status',
+            url: '../controller/AppointmentController.php?action=update_status', // Correct URL
             type: 'POST',
             data: {
                 appointment_id: appointmentId,
@@ -71,4 +72,10 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Attach event listener to the "Törlés" button inside the modal
+    $('#deleteModal .btn-delete-confirm').on('click', function() {
+        var appointmentId = $(this).data('id');
+        deleteAppointment(appointmentId);
+    });
 });

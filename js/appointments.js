@@ -1,3 +1,4 @@
+// filepath: /C:/MAMP/htdocs/husifix/2/idopont_foglalo/js/appointments.js
 $(document).ready(function() {
     /* ---------------------------------------------------------------------------appointments */
     const appointmentCards = document.querySelectorAll('.appointment-card');
@@ -16,10 +17,18 @@ $(document).ready(function() {
                 rateButton.style.display = 'none';
             }
 
-            deleteButton.addEventListener('click', function() {
+            // REMOVE THIS ENTIRE BLOCK OF CODE
+            /*deleteButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default action
+
                 const appointmentId = deleteButton.getAttribute('data-id');
-                document.querySelector('.btn-delete-confirm').setAttribute('data-id', appointmentId);
-            });
+                const deleteConfirmButton = document.querySelector('#deleteModal .btn-delete-confirm');
+                deleteConfirmButton.setAttribute('data-id', appointmentId);
+
+                // Trigger the modal explicitly
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+            });*/
         }
     });
 
