@@ -67,23 +67,23 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     </div>
 
     <div class="filter-section">
-        <div class="filter-button">
-            <i class="fas fa-hospital filter-icon"></i>
-            <span class="filter-text">Egészségügy</span>
-        </div>
-        <div class="filter-button">
-            <i class="fas fa-cut filter-icon"></i>
-            <span class="filter-text">Szépségipar</span>
-        </div>
-        <div class="filter-button">
-            <i class="fas fa-graduation-cap filter-icon"></i>
-            <span class="filter-text">Oktatás</span>
-        </div>
-        <div class="filter-button">
-            <i class="fa fa-bank filter-icon"></i>
-            <span class="filter-text">Ügyintézés</span>
-        </div>
+    <div class="filter-button" data-type="Egészségügy">
+        <i class="fas fa-hospital filter-icon"></i>
+        <span class="filter-text">Egészségügy</span>
     </div>
+    <div class="filter-button" data-type="Szépségipar">
+        <i class="fas fa-cut filter-icon"></i>
+        <span class="filter-text">Szépségipar</span>
+    </div>
+    <div class="filter-button" data-type="Oktatás">
+        <i class="fas fa-graduation-cap filter-icon"></i>
+        <span class="filter-text">Oktatás</span>
+    </div>
+    <div class="filter-button" data-type="Adminisztratív">
+        <i class="fa fa-bank filter-icon"></i>
+        <span class="filter-text">Ügyintézés</span>
+    </div>
+</div>
 
     <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
         <div class="add-service-container">
@@ -94,6 +94,40 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 <?php endif; ?>
 
     <hr class="divider">
+
+    <div class="container mt-4">
+        <div class="row" id="provider-list">
+        <?php
+        // Fetch all providers from database
+        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+                            FROM providers p 
+                            LEFT JOIN ratings r ON p.id = r.provider_id 
+                            GROUP BY p.id");
+        $stmt->execute();
+        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($providers as $provider): ?>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 provider-item" data-category="<?php echo htmlspecialchars($provider['type']); ?>">
+                <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
+                    <?php if (isset($provider['image_path']) && !empty($provider['image_path'])): ?>
+                        <img src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
+                    <?php else: ?>
+                        <img src="https://via.placeholder.com/300" alt="Default image">
+                    <?php endif; ?>
+                    <div class="card-footer">
+                        <span><?php echo htmlspecialchars($provider['name']); ?></span>
+                        <span class="star">
+                            <i class="fa fa-star"></i>
+                            <span><?php echo number_format($provider['average_rating'], 1); ?></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    </div>
+
+
 
     <div class="container mt-4">
     <div class="row">
@@ -107,7 +141,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
         $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($providers as $provider): ?>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 base-providers">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
                     <?php if (isset($provider['image_path']) && !empty($provider['image_path'])): ?>
                         <img src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
@@ -130,7 +164,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 <footer>
     <div class="footer-container">
         <div class="footer-section logo">
-            <img src="logo.jpg" alt="Bookify ​logo">
+            <img src="logo.jpg" alt="Bookify logo">
         </div>
         <div class="footer-section">
             <h3>Alapvető információk</h3>
@@ -138,7 +172,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                 
                 <li>Kapcsolat: bookify@gmail.com</li>
                 <li>Tel.: +36 30 284 0264</li>
-                <li>Cím: 7632 Pécs, Nagy imre út 14.</li>
+                <li>Cím: 7632 Pécs, Móra Ferenc utca 95.</li>
             </ul>
         </div>
         <div class="footer-section">
@@ -196,6 +230,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <script src="../js/appointments.js"></script>
     <script src="../js/alert.js"></script>
     <script src="../js/service.js"></script>
+    <script src="../js/filter.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
@@ -219,7 +254,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                     <div class="mb-3">
                         <label for="serviceType" class="form-label">Szolgáltatás típusa</label>
                         <select class="form-control" id="serviceType" name="type" required>
-                            <option value="Szépség">Szépség</option>
+                            <option value="Szépségipar">Szépség</option>
                             <option value="Oktatás">Oktatás</option>
                             <option value="Egészségügy">Egészségügy</option>
                             <option value="Adminisztratív">Adminisztratív</option>

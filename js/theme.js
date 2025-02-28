@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     closeButton.addEventListener("click", () => {
         floatingBox.classList.remove("show");
-        toggleArrow.style.display = "block"; 
+        setTimeout(() => {
+            toggleArrow.style.display = "block";
+        }, 300);
     });
 
     toggleArrow.addEventListener("click", () => {
