@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -727,3 +728,79 @@ body.dark-mode {
 }
 
 /*--------------------------------------------------------------- SERVICES*/
+
+
+/*--------------------------------------------------------------- FOOTER*/
+
+
+footer {
+    background-color: black;
+    color: white;
+    padding: 20px 0;
+    font-family: Arial, sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.footer-section {
+    text-align: center;
+    margin: 10px;
+}
+
+.footer-section h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin: 5px 0;
+}
+
+.footer-section ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-section ul li a:hover {
+    text-decoration: underline;
+}
+
+.logo img {
+    width: 150px;
+    border-radius: 50%;
+}
+
+.social-icons a {
+    display: inline-block;
+    margin: 0 8px;
+    color: white;
+    font-size: 24px;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: #ffcc00;
+}
+
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+/*--------------------------------------------------------------- FOOTER*/

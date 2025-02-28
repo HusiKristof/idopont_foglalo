@@ -325,10 +325,17 @@ $(document).ready(function() {
                 type: 'POST',
                 data: { date: date, provider_id: providerId },
                 success: function(response) {
-                    // Display available hours in the calendar
-                    const events = JSON.parse(response);
-                    calendar.fullCalendar('removeEvents');
-                    calendar.fullCalendar('addEventSource', events);
+                    try {
+                        const events = JSON.parse(response);
+                        if (!Array.isArray(events)) {
+                            throw new Error('Invalid response format');
+                        }
+                        calendar.fullCalendar('removeEvents');
+                        calendar.fullCalendar('addEventSource', events);
+                    } catch (error) {
+                        console.error('Error parsing working hours:', error);
+                        showAlert('Error loading available hours', 'error');
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching available hours:', error);

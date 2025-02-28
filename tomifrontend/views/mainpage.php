@@ -23,10 +23,22 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="../css/mainstyle.css">
+    <link rel="stylesheet" href="../css/darkmode.css">
+    <link rel="shortcut icon" href="logo.jpg">
     <title>Felfedezés</title>
 </head>
 <body data-user-id='<?php echo htmlspecialchars($user['id']); ?>'>
-<button id="theme-toggle" class="btn btn-secondary" style="position: fixed; top: 10px; right: 10px;">Light Mode</button>
+
+<!-- A belebegő doboz -->
+<div id="floating-box" class="floating-box">
+    <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+    <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
+    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
+</div>
+
+<!-- A visszahozó nyíl -->
+<div id="toggle-arrow" class="toggle-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">
@@ -51,27 +63,27 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
             </a>
-
-            <a href="../models/logout.php" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
         </div>
     </div>
 
     <div class="filter-section">
-        <div class="filter-button">
-            <i class="fas fa-hospital filter-icon"></i>
-            <span class="filter-text">Egészségügy</span>
-        </div>
-        <div class="filter-button">
-            <i class="fas fa-cut filter-icon"></i>
-            <span class="filter-text">Szépségipar</span>
-        </div>
-        <div class="filter-button">
-            <i class="fa fa-bank filter-icon"></i>
-            <span class="filter-text">Ügyintézés</span>
-        </div>
+    <div class="filter-button" data-type="Egészségügy">
+        <i class="fas fa-hospital filter-icon"></i>
+        <span class="filter-text">Egészségügy</span>
     </div>
+    <div class="filter-button" data-type="Szépségipar">
+        <i class="fas fa-cut filter-icon"></i>
+        <span class="filter-text">Szépségipar</span>
+    </div>
+    <div class="filter-button" data-type="Oktatás">
+        <i class="fas fa-graduation-cap filter-icon"></i>
+        <span class="filter-text">Oktatás</span>
+    </div>
+    <div class="filter-button" data-type="Adminisztratív">
+        <i class="fa fa-bank filter-icon"></i>
+        <span class="filter-text">Ügyintézés</span>
+    </div>
+</div>
 
     <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
         <div class="add-service-container">
@@ -82,6 +94,40 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 <?php endif; ?>
 
     <hr class="divider">
+
+    <div class="container mt-4">
+        <div class="row" id="provider-list">
+        <?php
+        // Fetch all providers from database
+        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+                            FROM providers p 
+                            LEFT JOIN ratings r ON p.id = r.provider_id 
+                            GROUP BY p.id");
+        $stmt->execute();
+        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($providers as $provider): ?>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 provider-item" data-category="<?php echo htmlspecialchars($provider['type']); ?>">
+                <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
+                    <?php if (isset($provider['image_path']) && !empty($provider['image_path'])): ?>
+                        <img class="lazy" data-src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
+                    <?php else: ?>
+                        <img class="lazy" data-src="https://via.placeholder.com/300" alt="Default image">
+                    <?php endif; ?>
+                    <div class="card-footer">
+                        <span><?php echo htmlspecialchars($provider['name']); ?></span>
+                        <span class="star">
+                            <i class="fa fa-star"></i>
+                            <span><?php echo number_format($provider['average_rating'], 1); ?></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    </div>
+
+
 
     <div class="container mt-4">
     <div class="row">
@@ -95,12 +141,12 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
         $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($providers as $provider): ?>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 base-providers">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
                     <?php if (isset($provider['image_path']) && !empty($provider['image_path'])): ?>
-                        <img src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
+                        <img class="lazy" data-src="<?php echo htmlspecialchars($provider['image_path']); ?>" alt="<?php echo htmlspecialchars($provider['name']); ?>">
                     <?php else: ?>
-                        <img src="https://via.placeholder.com/300" alt="Default image">
+                        <img class="lazy" data-src="https://via.placeholder.com/300" alt="Default image">
                     <?php endif; ?>
                     <div class="card-footer">
                         <span><?php echo htmlspecialchars($provider['name']); ?></span>
@@ -115,34 +161,44 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     </div>
 </div>
 
-    <hr class="divider">
+<footer>
+    <div class="footer-container">
+        <div class="footer-section logo">
+            <img src="logo.jpg" alt="Bookify logo">
+        </div>
+        <div class="footer-section">
+            <h3>Alapvető információk</h3>
+            <ul>
+                
+                <li>Kapcsolat: bookify@gmail.com</li>
+                <li>Tel.: +36 30 284 0264</li>
+                <li>Cím: 7632 Pécs, Móra Ferenc utca 95.</li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Hasznos linkek</h3>
+            <ul>
+                <li><a href="#">Rólunk</a></li>
+                <li><a href="#">ügyfélszolgálat</a></li>
+                <li><a href="#">GYIK (Gyakran Ismételt Kérdések)</a></li>
+                <li><a href="#">Lemondási szabályzat</a></li>
+            </ul>
+        </div>
+        <div class="footer-section social">
+            <h4>Kövess minket!</h4>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook"></i></a>
+                <a href="https://x.com" target="_blank" class="social-icon"><i class="fab fa-x"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2024 Bookify Kft. Minden jog fenntartva.</p>
+    </div>
+</footer>
 
-    <div class="social-media-section">
-    <h2>Kövess minket!</h2>
-    <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-    <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-</div>
 
-<div class="faq-section">
-    <h2>Gyakran Ismételt Kérdések</h2>
-    <div class="faq">
-        <h3>Hogyan foglalhatok időpontot?</h3>
-        <p>Az időpontfoglalás egyszerű. Csak válaszd ki a szolgáltatást, majd kattints az "Időpont választás" gombra.</p>
-    </div>
-    <div class="faq">
-        <h3>Hogyan mondhatom le a folgalásomat?</h3>
-        <p>A foglalás után, az "Időpontjaim" menüre kattintva mondhatod le foglalásod.</p>
-    </div>
-    <div class="faq">
-        <h3>Szükséges-e előleget fizetni a foglalás megerősítéséhez?</h3>
-        <p>Nem, előleget nem kell fizetnie. A szolgáltatás árát csak az igénybevétel után kell kiegyenlíteni.</p>
-    </div>
-    <div class="faq">
-        <h3>Milyen fizetési módok állnak rendelkezésre?</h3>
-        <p>A szolgáltatás díját készpénzben, bankkártyával vagy átutalással tudja kiegyenlíteni a helyszínen.</p>
-    </div>
-</div>
 
     <!-- Modal -->
     <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
@@ -174,9 +230,16 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <script src="../js/appointments.js"></script>
     <script src="../js/alert.js"></script>
     <script src="../js/service.js"></script>
+    <script src="../js/filter.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.11/jquery.lazy.min.js"></script>
+    <script>
+        $(function() {
+            $('.lazy').Lazy();
+        });
+    </script>
 
     <script>
     window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
@@ -197,10 +260,10 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                     <div class="mb-3">
                         <label for="serviceType" class="form-label">Szolgáltatás típusa</label>
                         <select class="form-control" id="serviceType" name="type" required>
-                            <option value="haircut">Szépség</option>
-                            <option value="education">Oktatás</option>
-                            <option value="medical">Egészségügy</option>
-                            <option value="administrative">Adminisztratív</option>
+                            <option value="Szépségipar">Szépség</option>
+                            <option value="Oktatás">Oktatás</option>
+                            <option value="Egészségügy">Egészségügy</option>
+                            <option value="Adminisztratív">Adminisztratív</option>
                         </select>
                     </div>
                     <div class="mb-3">

@@ -1,29 +1,48 @@
-$(document).ready(function() {
-    /* ---------------------------------------------------------------------------darkmode-lightmode */
-    const themeToggleBtn = document.getElementById('theme-toggle');
+document.addEventListener("DOMContentLoaded", function () {
+    const themeToggleInput = document.getElementById('darkmode-toggle'); // Az input checkbox
     const body = document.body;
 
-    // Load the saved theme from localStorage
+    // Mentett téma betöltése
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme);
-        themeToggleBtn.textContent = savedTheme === 'dark-mode' ? 'Light Mode' : 'Dark Mode';
+    if (savedTheme === 'dark-mode') {
+        body.classList.add('dark-mode');
+        themeToggleInput.checked = true; // Ha dark mode, akkor a kapcsoló legyen bekapcsolva
     } else {
         body.classList.add('light-mode');
-        themeToggleBtn.textContent = 'Dark Mode';
+        themeToggleInput.checked = false;
     }
 
-    themeToggleBtn.addEventListener('click', function() {
-        if (body.classList.contains('light-mode')) {
+    // Kapcsoló eseménykezelő
+    themeToggleInput.addEventListener('change', function () {
+        if (themeToggleInput.checked) {
             body.classList.remove('light-mode');
             body.classList.add('dark-mode');
-            themeToggleBtn.textContent = 'Light Mode';
             localStorage.setItem('theme', 'dark-mode');
         } else {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
-            themeToggleBtn.textContent = 'Dark Mode';
             localStorage.setItem('theme', 'light-mode');
         }
+    });
+
+    // Belebegő doboz vezérlés
+    const floatingBox = document.getElementById("floating-box");
+    const closeButton = document.getElementById("close-btn");
+    const toggleArrow = document.getElementById("toggle-arrow");
+
+    setTimeout(() => {
+        floatingBox.classList.add("show");
+    }, 500);
+
+    closeButton.addEventListener("click", () => {
+        floatingBox.classList.remove("show");
+        setTimeout(() => {
+            toggleArrow.style.display = "block";
+        }, 300);
+    });
+
+    toggleArrow.addEventListener("click", () => {
+        floatingBox.classList.add("show");
+        toggleArrow.style.display = "none"; 
     });
 });

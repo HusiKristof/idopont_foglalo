@@ -246,7 +246,24 @@ if ($action === 'create_provider' || $action === 'update_provider') {
         ]);
         exit;
     }
+}
 
-    // Continue with the rest of your provider creation/update logic
-    // ...
+if ($_GET['action'] === 'filter_providers') {
+    $type = $_POST['type'];
+    
+    // Lekérdezés a szolgáltatók adatbázisából a kategória alapján
+    $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+                        FROM providers p 
+                        LEFT JOIN ratings r ON p.id = r.provider_id 
+                        WHERE p.type = :type 
+                        GROUP BY p.id");
+    $stmt->bindParam(':type', $type);
+    $stmt->execute();
+    $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo json_encode([
+        'status' => 'success',
+        'providers' => $providers
+    ]);
+    exit;
 }
