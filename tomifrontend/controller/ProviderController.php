@@ -33,7 +33,6 @@ if ($action === 'fetch') {
         }
     }
 } elseif ($action === 'book') {
-    // Validate if selected time is within working hours
     $user_id = $_SESSION['user']['id'] ?? null;
     if (!$user_id) {
         echo json_encode(['status' => 'error', 'message' => 'User ID not found in session.']);
@@ -41,25 +40,50 @@ if ($action === 'fetch') {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Log the incoming data
-        error_log('Booking request data: ' . print_r($_POST, true));
-        
         $date = $_POST['selectedDate'] ?? null;
         $time = $_POST['selectedTime'] ?? null;
         $provider_id = $_POST['provider_id'] ?? null;
         
-        // Check if time is within working hours
+        // Get provider working hours
         $stmt = $db->prepare("SELECT working_hours FROM providers WHERE id = ?");
         $stmt->execute([$provider_id]);
         $provider = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($provider) {
-            $workingHours = explode('-', $provider['working_hours']);
-            $startTime = strtotime($workingHours[0]);
-            $endTime = strtotime($workingHours[1]);
+            // Parse working hours
+            $workingHours = $provider['working_hours'];
+            list($days, $hours) = explode(' ', $workingHours);
+            list($startDay, $endDay) = explode('-', $days);
+            list($startTime, $endTime) = explode('-', $hours);
+
+            // Get day of week for selected date
+            $selectedDateTime = new DateTime($date);
+            $selectedDayName = $selectedDateTime->format('l');
+            $dayMapping = [
+                'Monday' => 'Hétfő',
+                'Tuesday' => 'Kedd',
+                'Wednesday' => 'Szerda',
+                'Thursday' => 'Csütörtök',
+                'Friday' => 'Péntek',
+                'Saturday' => 'Szombat',
+                'Sunday' => 'Vasárnap'
+            ];
+            $selectedDay = $dayMapping[$selectedDayName];
+
+            // Check if selected day is within working days
+            $validDays = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
+            $startDayIndex = array_search($startDay, $validDays);
+            $endDayIndex = array_search($endDay, $validDays);
+            $selectedDayIndex = array_search($selectedDay, $validDays);
+
+            $isValidDay = $selectedDayIndex >= $startDayIndex && $selectedDayIndex <= $endDayIndex;
+
+            // Check if selected time is within working hours
             $selectedTime = strtotime($time);
-            
-            if ($selectedTime >= $startTime && $selectedTime <= $endTime) {
+            $workingStartTime = strtotime($startTime);
+            $workingEndTime = strtotime($endTime);
+
+            if ($isValidDay && $selectedTime >= $workingStartTime && $selectedTime <= $workingEndTime) {
                 $appointment_datetime = $date . ' ' . $time;
                 $stmt = $db->prepare("INSERT INTO appointments (user_id, provider_id, appointment_date, status) VALUES (?, ?, ?, 'pending')");
                 if ($stmt->execute([$user_id, $provider_id, $appointment_datetime])) {
@@ -100,7 +124,7 @@ if ($action === 'fetch') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
     }
-    exit();
+    exit;
 // Add this new action to handle working hours fetching
 } elseif ($action === 'getWorkingHours') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['provider_id'])) {
