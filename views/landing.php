@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/') {
         <div class="hero-content">
             <h1>Üdvözlünk az Időpontfoglaló Rendszerünkben!</h1>
             <p>Egyszerű és gyors időpontfoglalás különféle szolgáltatásokhoz.</p>
-            <a href="#">
+            <a href="../index.php">
                 <i class="fa fa-compass"></i>
                 <span>A Felfedezéshez!</span>
             </a>

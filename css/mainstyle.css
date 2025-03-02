@@ -33,7 +33,7 @@ body.dark-mode {
 }
 
 .island {
-    background-color: #a8a8a8;
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     flex-wrap: wrap;
     align-items: center;

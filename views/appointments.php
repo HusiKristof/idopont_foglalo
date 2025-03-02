@@ -91,10 +91,6 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
             </a>
-
-            <a href="../models/logout.php" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
         </div>
     </div>
 
