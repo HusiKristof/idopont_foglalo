@@ -45,4 +45,19 @@ document.addEventListener("DOMContentLoaded", function () {
         floatingBox.classList.add("show");
         toggleArrow.style.display = "none"; 
     });
+
+    // Ha dark mode van, állítsuk be a floating boxot is ennek megfelelően
+    const updateFloatingBoxTheme = () => {
+        if (body.classList.contains('dark-mode')) {
+            floatingBox.classList.add('dark-mode');
+        } else {
+            floatingBox.classList.remove('dark-mode');
+        }
+    };
+
+    // Téma változtatáskor frissítjük a floating box stílust
+    themeToggleInput.addEventListener('change', updateFloatingBoxTheme);
+
+    // Inicializáláskor frissítjük a floating box stílust a meglévő témához
+    updateFloatingBoxTheme();
 });

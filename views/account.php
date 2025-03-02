@@ -26,7 +26,10 @@
 <div id="floating-box" class="floating-box">
     <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
     <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
-    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
+    <label for="darkmode-toggle" class="darkmode-toggle-label">
+        <i class="fa-solid fa-sun"></i>
+        <i class="fa-solid fa-moon"></i>
+    </label>
 </div>
 
 <!-- A visszahozó nyíl -->
@@ -38,7 +41,7 @@
             <input type="text" class="search-input" placeholder="Keresés...">
             <i class="fas fa-search search-icon"></i>
 
-            <a href="landing.html">
+            <a href="landing.php">
                 <i class="fa fa-home"></i>
                 <span>Főoldal</span>
             </a>
