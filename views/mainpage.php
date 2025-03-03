@@ -1,4 +1,9 @@
 <?php
+
+
+
+// Most már használhatod a dekódolt adatokat
+$userId = $decoded->userId;
 session_start();
 require_once '../models/rating.php';
 require_once '../database.php';
@@ -26,6 +31,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <link rel="stylesheet" href="../css/darkmode.css">
     <link rel="shortcut icon" href="logo.jpg">
     <title>Felfedezés</title>
+    
 </head>
 <body data-user-id='<?php echo htmlspecialchars($user['id']); ?>'>
 
