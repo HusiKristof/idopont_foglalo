@@ -136,8 +136,8 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endif; ?>
                     </div>
                     <?php if ($user['role'] === 'admin'): ?>
-                      <button class="confirm-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
-                      <button class="reject-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
+                      <button class="confirm-button btn btn-secondary" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
+                      <button class="reject-button btn btn-secondary" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
                     <?php endif; ?>
                     <button class="delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash-alt"></i> Törlés</button>
                     <?php if ($user['role'] !== 'admin'): ?>
