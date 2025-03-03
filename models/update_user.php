@@ -1,6 +1,6 @@
 <?php
 session_start();
-var_dump($_SESSION); // Ellenőrizd, mit tartalmaz a session
+//var_dump($_SESSION); // Ellenőrizd, mit tartalmaz a session
 
 if (!isset($_SESSION['user'])) {
     header('Location: index.php'); // Redirect to login if not logged in

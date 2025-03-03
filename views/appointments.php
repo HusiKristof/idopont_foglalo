@@ -103,9 +103,25 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="appointment-card">
                     <div class="appointment-header">
                         <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> 
-                        <?php echo htmlspecialchars($appointment['provider_name']); ?>
-                        <span style="float: right;">
-                            <?php echo isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A' ; ?>
+                        <span class="provider-name"><?php echo htmlspecialchars($appointment['provider_name']); ?></span>
+                        <span class="appointment-status">
+                            <?php 
+                            $status = isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A';
+                            switch ($status) {
+                                case 'confirmed':
+                                    echo 'Elfogadva';
+                                    break;
+                                case 'pending':
+                                    echo 'Megerősítésre vár';
+                                    break;
+                                case 'canceled':
+                                    echo 'Elutasítva';
+                                    break;
+                                default:
+                                    echo $status;
+                                    break;
+                            }
+                            ?>
                         </span>
                     </div>
                     <div class="appointment-details">
@@ -123,8 +139,8 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endif; ?>
                     </div>
                     <?php if ($user['role'] === 'admin'): ?>
-                      <button class="confirm-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
-                      <button class="reject-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
+                      <button class="confirm-button btn btn-secondary" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
+                      <button class="reject-button btn btn-secondary" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
                     <?php endif; ?>
                     <button class="delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash-alt"></i> Törlés</button>
                     <?php if ($user['role'] !== 'admin'): ?>
