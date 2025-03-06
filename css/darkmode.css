@@ -1,0 +1,116 @@
+.darkmode-toggle-label {
+    width: 100px;
+    height: 40px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    background: #ebebeb;
+    border-radius: 200px;
+    box-shadow: inset 0px 5px 15px rgba(0,0,0,0.4), inset 0px 5px 15px rgba(255, 255, 255,0.4);
+    cursor: pointer;
+    transition: 0.7s;
+}
+
+.darkmode-toggle-label .fa-sun {
+    color: #ffcc89;
+}
+
+.darkmode-toggle-label .fa-moon {
+    color: #777;
+}
+
+.darkmode-toggle-input {
+    width: 0;
+    height: 0;
+    visibility: hidden;
+}
+
+.darkmode-toggle-input:checked + .darkmode-toggle-label {
+    background: #242424;
+}
+
+.darkmode-toggle-input:checked + .darkmode-toggle-label .fa-sun {
+    color: #777;
+}
+
+.darkmode-toggle-input:checked + .darkmode-toggle-label .fa-moon {
+    color: #ffcc89;
+}
+
+.darkmode-toggle-label:active::after {
+    width: 52px;
+}
+
+.floating-box {
+    position: fixed;
+    right: -300px;
+    top: 10%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: right 0.5s ease-in-out;
+}
+
+.floating-box.show {
+    right: 10px;
+}
+
+.toggle-arrow {
+    position: fixed;
+    right: 0;
+    top: 10%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+}
+
+.dark-mode footer {
+    background-color: #242424;
+    color: #ffffff;
+}
+
+.dark-mode .footer-section h3,
+.dark-mode .footer-section h4 {
+    color: #f1f1f1;
+}
+
+.dark-mode .footer-section ul li a {
+    color: #f1f1f1;
+}
+
+.dark-mode .footer-bottom {
+    background-color: #242424;
+    color: #cccccc;
+}
+
+.social-icons a {
+    color: #f1f1f1;
+}
+
+.close-btn {
+    border: none;
+    background: transparent;
+    color: red; 
+    padding: 5px;
+    cursor: pointer;
+    font-size: 20px; 
+    border-radius: 50%;
+    transition: color 0.3s ease, transform 0.3s ease; 
+}
+
+.close-btn:hover {
+    color: darkred; 
+    transform: scale(1.1); 
+}
