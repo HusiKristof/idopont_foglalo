@@ -1,6 +1,6 @@
 <?php
 require_once '../models/User.php';
-require_once '../database.php'; // Database connection
+require_once '../database.php'; 
 session_start();
 
 $action = isset($_GET["action"]) ? $_GET["action"] : null;
@@ -18,12 +18,14 @@ if ($action === 'login') {
                 'name' => $user['name'],
                 'email' => $user['email'],
                 'phone' => $user['phone'],
-                'role' => $user['role']  // Added role to session
+                'role' => $user['role']  
             ];
-            header('Location: ../views/mainpage.php');
+            header('Location: ../views/mainpage.php'); 
             exit();
         } else {
-            echo "Invalid credentials!";
+            $_SESSION['error'] = "Helytelen email vagy jelszó!";
+            header('Location: ../index.php');
+            exit();
         }
     }
 } elseif ($action === 'register') {
@@ -37,17 +39,8 @@ if ($action === 'login') {
             header('Location: ../index.php');
             exit();
         } else {
-            echo "Registration failed!";
+            echo "A regisztráció sikertelen!";
         }
     }
-}/*  elseif ($action === 'delete_appointment') {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $appointmentId = $_POST['appointment_id'];
-        $stmt = $db->prepare("DELETE FROM appointments WHERE id = ?");
-        if ($stmt->execute([$appointmentId])) {
-            echo json_encode(['status' => 'success']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to delete appointment']);
-        }
-    }
-} */
+}
+?>
