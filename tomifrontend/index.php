@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +10,7 @@
 <body>
     <div class="container" id="container">
         <div class="form-container signUp">
-            <form action="controller/UserController.php?action=register" method="POST">
-
+            <form id="registerForm">
                 <h1>Regisztráció</h1>
                 <div class="icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
@@ -22,34 +21,35 @@
 
                 <div class="input-container">
                     <i class="fas fa-user"></i>
-                    <input type="text" placeholder="Teljes név" name="name" id="name" >
-                    <label for="name">Teljes név</label>
+                    <input type="text" placeholder="Teljes név" name="name" id="reg-name" required>
+                    <label for="reg-name">Teljes név</label>
                 </div>
 
                 <div class="input-container">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" placeholder="E-mail" name="email" id="email">
-                    <label for="email">E-mail</label>
+                    <input type="email" placeholder="E-mail" name="email" id="reg-email" required>
+                    <label for="reg-email">E-mail</label>
                 </div>
 
                 <div class="input-container">
                     <i class="fa fa-phone"></i>
-                    <input type="tel" placeholder="Telefonszám" name="phone" id="phone" pattern="\+36\s[0-9]{2}-[0-9]{3}-[0-9]{4}" required>
-                    <label for="phone">Telefonszám</label>
+                    <input type="tel" placeholder="Telefonszám" name="phone" id="reg-phone" 
+                           pattern="\+36\s[0-9]{2}-[0-9]{3}-[0-9]{4}" required>
+                    <label for="reg-phone">Telefonszám</label>
                 </div>
 
                 <div class="input-container">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Jelszó" name="password" id="password">
-                    <label for="password">Jelszó</label>
+                    <input type="password" placeholder="Jelszó" name="password" id="reg-password" required>
+                    <label for="reg-password">Jelszó</label>
                 </div>
-                <button type="submit" class="btn" value="signUp" name="signUp" id="signUp">Regisztráció</button>
+
+                <button type="submit" class="btn">Regisztráció</button>
             </form>
         </div>
 
         <div class="form-container sign-in">
-            <form action="../controller/UserController.php?action=login" method="POST">
-
+            <form id="loginForm">
                 <h1>Bejelentkezés</h1>
                 <div class="icons">
                     <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
@@ -60,23 +60,23 @@
 
                 <div class="input-container">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" placeholder="E-mail" name="email" id="email">
-                    <label for="email">E-mail</label>
+                    <input type="email" placeholder="E-mail" name="email" id="login-email" required>
+                    <label for="login-email">E-mail</label>
                 </div>
 
                 <div class="input-container">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Jelszó" name="password" id="password">
-                    <label for="password">Jelszó</label>
+                    <input type="password" placeholder="Jelszó" name="password" id="login-password" required>
+                    <label for="login-password">Jelszó</label>
                 </div>
 
                 <a href="#">Elfelejtetted a jelszavad?</a>
-                <button type="submit" class="btn" value="signIn" name="signIn">Bejelentkezés</button>
+                <button type="submit" class="btn">Bejelentkezés</button>
             </form>
         </div>
+
         <div class="toggle-container">
             <div class="toggle">
-
                 <div class="toggle-panel toggle-left">
                     <h1>Üdvözlünk az oldalunkon!</h1>
                     <p>Regisztrálj be az adataiddal hogy hozzáférj a szolgáltatásokhoz.</p>
@@ -85,13 +85,15 @@
 
                 <div class="toggle-panel toggle-right">
                     <h1>Üdvözlünk újra!</h1>
-                    <p>Ird be az adataid hogy hozzáférj a szolgáltatásokhoz.</p>
+                    <p>Írd be az adataid hogy hozzáférj a szolgáltatásokhoz.</p>
                     <button class="hidden" id="register">Regisztráció</button>
-                    
                 </div>
             </div>
         </div>
     </div>
-    <script src="../js/script.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

@@ -17,10 +17,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/mainstyle.css">
+    <link rel="stylesheet" href="../css/darkmode.css">
     <title>Fiók</title>
 </head>
 <body>
-<button id="theme-toggle" class="btn btn-secondary" style="position: fixed; top: 10px; right: 10px;">Light Mode</button>
+
+<!-- A belebegő doboz -->
+<div id="floating-box" class="floating-box">
+    <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+    <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
+    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
+</div>
+
+<!-- A visszahozó nyíl -->
+<div id="toggle-arrow" class="toggle-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+
+
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">

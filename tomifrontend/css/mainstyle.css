@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -33,7 +32,7 @@ body.dark-mode {
 }
 
 .island {
-    background-color: #a8a8a8;
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -128,6 +127,12 @@ body.dark-mode {
     flex-direction: column;
     justify-content: flex-end;
     position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Example animation */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card img {
@@ -344,6 +349,9 @@ body.dark-mode {
     margin-bottom: 1rem;
     border-bottom: 2px solid #1d7dff;
     padding-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .appointment-details {
@@ -426,6 +434,16 @@ body.dark-mode {
 
 .appointments-container li:last-child {
     border-bottom: none;
+}
+
+.provider-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.appointment-status {
+    color: #007bff;
+    font-weight: bold;
 }
 
 /* ------------------------------------------------------------------------------------------------ ACCOUNTSTYLE */

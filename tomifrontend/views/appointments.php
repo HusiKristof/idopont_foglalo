@@ -51,10 +51,22 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/mainstyle.css">
+    <link rel="stylesheet" href="../css/darkmode.css">
     <title>Időpontjaim</title>
 </head>
 <body>
-<button id="theme-toggle" class="btn btn-secondary" style="position: fixed; top: 10px; right: 10px;">Light Mode</button>
+
+<!-- A belebegő doboz -->
+<div id="floating-box" class="floating-box">
+    <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+    <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
+    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
+</div>
+
+<!-- A visszahozó nyíl -->
+<div id="toggle-arrow" class="toggle-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+
+
     <div class="dynamic-navbar">
         <div class="island">
             <input type="text" class="search-input" placeholder="Keresés...">
@@ -79,10 +91,6 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <i class="fa fa-user"></i>
                 <span><?php echo htmlspecialchars($user['name']); ?></span>
             </a>
-
-            <a href="../models/logout.php" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
         </div>
     </div>
 
@@ -92,9 +100,25 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="appointment-card">
                     <div class="appointment-header">
                         <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> 
-                        <?php echo htmlspecialchars($appointment['provider_name']); ?>
-                        <span style="float: right;">
-                            <?php echo isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A' ; ?>
+                        <span class="provider-name"><?php echo htmlspecialchars($appointment['provider_name']); ?></span>
+                        <span class="appointment-status">
+                            <?php 
+                            $status = isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A';
+                            switch ($status) {
+                                case 'confirmed':
+                                    echo 'Elfogadva';
+                                    break;
+                                case 'pending':
+                                    echo 'Megerősítésre vár';
+                                    break;
+                                case 'canceled':
+                                    echo 'Elutasítva';
+                                    break;
+                                default:
+                                    echo $status;
+                                    break;
+                            }
+                            ?>
                         </span>
                     </div>
                     <div class="appointment-details">

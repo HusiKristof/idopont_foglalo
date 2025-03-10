@@ -6,20 +6,67 @@ class User {
         $this->db = $database;
     }
 
-    public function register($name, $email, $phone, $password) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'customer')");
-        return $stmt->execute([$name, $email, $phone, $hashedPassword]);
+    public function login($email, $password) {
+        try {
+            $stmt = $this->db->prepare("SELECT id, name, email, phone, password, role FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password'])) {
+                unset($user['password']);
+                return [
+                    'status' => 'success',
+                    'user' => $user
+                ];
+            }
+            
+            // Add logging
+            error_log("Failed login attempt for email: " . $email);
+            
+            return [
+                'status' => 'error',
+                'message' => 'Invalid credentials'
+            ];
+        } catch (PDOException $e) {
+            error_log("Database error during login: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'An error occurred during login'
+            ];
+        }
     }
 
-    public function login($email, $password) {
-        $stmt = $this->db->prepare("SELECT id, name, email, phone, password, role FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($user && password_verify($password, $user['password'])) {
-            return $user;
+    public function register($name, $email, $phone, $password) {
+        try {
+            // Check if email already exists
+            $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetch()) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Email already exists'
+                ];
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $this->db->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'customer')");
+            
+            if ($stmt->execute([$name, $email, $phone, $hashedPassword])) {
+                return [
+                    'status' => 'success',
+                    'message' => 'Registration successful'
+                ];
+            }
+            return [
+                'status' => 'error',
+                'message' => 'Registration failed'
+            ];
+        } catch (PDOException $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Database error: ' . $e->getMessage()
+            ];
         }
-        return false;
     }
 }
 ?>
