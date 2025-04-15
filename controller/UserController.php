@@ -23,8 +23,9 @@ if ($action === 'login') {
             header('Location: ../views/mainpage.php'); 
             exit();
         } else {
+            http_response_code(400); // Set the response code to 400
             $_SESSION['error'] = "Helytelen email vagy jelszó!";
-            header('Location: ../index.php');
+            echo json_encode(['status' => 'error', 'message' => 'Helytelen email vagy jelszó!']);
             exit();
         }
     }
