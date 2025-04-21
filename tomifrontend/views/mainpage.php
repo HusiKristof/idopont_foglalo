@@ -259,6 +259,39 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     window.providerId = <?php echo json_encode($provider_id ?? null); ?>;
 </script>
 
+<script>
+$(function() {
+    $('.lazy').Lazy();
+
+    // Re-initialize lazy loading after AJAX filter or pagination
+    $(document).on('ajaxComplete', function() {
+        $('.lazy').Lazy();
+    });
+
+    // Event delegation for dynamically loaded cards
+    $('#provider-list').on('click', '.card', function() {
+        const providerId = $(this).data('id');
+        $('#dataModal').data('provider-id', providerId);
+
+        // Dynamically load FullCalendar scripts only when needed
+        if (!window.fullCalendarLoaded) {
+            $.when(
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'),
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js')
+            ).done(function() {
+                window.fullCalendarLoaded = true;
+                // Now show modal and initialize calendar
+                $('#dataModal').modal('show');
+                // ...initialize calendar here...
+            });
+        } else {
+            $('#dataModal').modal('show');
+            // ...initialize calendar here...
+        }
+    });
+});
+</script>
+
 <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
 <!-- Add Service Modal -->
 <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">

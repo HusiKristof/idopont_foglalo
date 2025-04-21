@@ -83,7 +83,48 @@ $(document).ready(function() {
                 type: 'POST',
                 data: { id: providerId },
                 success: function(response) {
-                    $('#modalBody').html(response);
+                    try {
+                        const provider = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        // Create HTML template using your existing CSS classes
+                        const providerHtml = `
+                            <div class="provider-container">
+                                <div class="provider-header">
+                                    <h3>${provider.name}</h3>
+                                    <span class="provider-type">${provider.type}</span>
+                                </div>
+                                <div class="provider-body">
+                                    <div class="provider-info">
+                                        <p class="description">${provider.description}</p>
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>${provider.address}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>${provider.working_hours}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span>${provider.phone_number}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-tag"></i>
+                                            <span>${provider.price} Ft</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-hourglass-half"></i>
+                                            <span>${provider.duration} perc</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        
+                        $('#modalBody').html(providerHtml);
+                    } catch (error) {
+                        console.error('Error parsing provider details:', error);
+                        showAlert('Error loading provider details', 'error');
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching provider details:', error);
@@ -96,179 +137,133 @@ $(document).ready(function() {
         function initializeCalendar() {
             const providerId = $('#dataModal').data('provider-id');
             
+            // First fetch provider details to get duration
             $.ajax({
-                url: '../controller/providerController.php?action=getWorkingHours',
+                url: '../controller/providerController.php?action=fetch',
                 type: 'POST',
-                data: { provider_id: providerId },
-                success: function(response) {
-                    try {
-                        const workingHours = JSON.parse(response);
-                        const [days, hours] = workingHours.working_hours.split(' ');
-                        const [startDay, endDay] = days.split('-');
-                        const [startTime, endTime] = hours.split('-');
-                        
-                        // Define valid days mapping
-                        const dayMapping = {
-                            'Hétfő': 1,
-                            'Kedd': 2,
-                            'Szerda': 3,
-                            'Csütörtök': 4,
-                            'Péntek': 5,
-                            'Szombat': 6,
-                            'Vasárnap': 0
-                        };
+                data: { id: providerId },
+                success: function(providerResponse) {
+                    let provider = typeof providerResponse === 'string' 
+                        ? JSON.parse(providerResponse) 
+                        : providerResponse;
 
-                        // Get start and end day numbers
-                        const startDayNum = dayMapping[startDay];
-                        const endDayNum = dayMapping[endDay];
+                    const providerDuration = parseInt(provider.duration) || 30;
 
-                        // Create array of valid days
-                        const validDays = [];
-                        let currentDay = startDayNum;
-                        while (true) {
-                            validDays.push(currentDay);
-                            if (currentDay === endDayNum) break;
-                            currentDay = (currentDay % 7) + 1;
-                            if (currentDay === 0) currentDay = 7;
-                        }
+                    // Now fetch working hours
+                    $.ajax({
+                        url: '../controller/providerController.php?action=getWorkingHours',
+                        type: 'POST',
+                        data: { provider_id: providerId },
+                        success: function(response) {
+                            try {
+                                const workingHours = JSON.parse(response);
+                                const [days, hours] = workingHours.working_hours.split(' ');
+                                const [startDay, endDay] = days.split('-');
+                                const [startTime, endTime] = hours.split('-');
 
-                        calendar = $('#calendar').fullCalendar({
-                            header: {
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'month'
-                            },
-                            defaultView: 'month',
-                            height: 'auto',
-                            contentHeight: 'auto',
-                            selectable: true,
-                            selectHelper: true,
-                            locale: 'hu',
-                            firstDay: 1,
-                            monthNames: ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 
-                                       'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'],
-                            monthNamesShort: ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 
-                                            'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'],
-                            dayNames: ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'],
-                            dayNamesShort: ['Vas', 'Hét', 'Ke', 'Sze', 'Csü', 'Pén', 'Szo'],
-                            buttonText: {
-                                today: 'Ma',
-                                month: 'Hónap'
-                            },
-                            businessHours: {
-                                dow: validDays,
-                                start: startTime,
-                                end: endTime
-                            },
-                            selectConstraint: 'businessHours',
-                            dayRender: function(date, cell) {
-                                const dayOfWeek = date.day();
-                                if (!validDays.includes(dayOfWeek)) {
-                                    cell.addClass('fc-disabled-day');
-                                    cell.css({
-                                        'background-color': '#f5f5f5',
-                                        'opacity': '0.6',
-                                        'cursor': 'not-allowed'
-                                    });
+                                // Define valid days mapping
+                                const dayMapping = {
+                                    'Hétfő': 1,
+                                    'Kedd': 2,
+                                    'Szerda': 3,
+                                    'Csütörtök': 4,
+                                    'Péntek': 5,
+                                    'Szombat': 6,
+                                    'Vasárnap': 0
+                                };
+
+                                // Get start and end day numbers
+                                const startDayNum = dayMapping[startDay];
+                                const endDayNum = dayMapping[endDay];
+
+                                // Create array of valid days
+                                const validDays = [];
+                                let currentDay = startDayNum;
+                                while (true) {
+                                    validDays.push(currentDay);
+                                    if (currentDay === endDayNum) break;
+                                    currentDay = (currentDay % 7) + 1;
+                                    if (currentDay === 0) currentDay = 7;
                                 }
-                            },
-                            // When a day is clicked in month view
-                            dayClick: function(date) {
-                                // First fetch booked appointments for this date
-                                fetchBookedAppointments(date, providerId);
-                                
-                                calendar.fullCalendar('changeView', 'agendaDay', date);
-                                // After switching to day view, apply these settings
-                                calendar.fullCalendar('option', {
-                                    slotDuration: '00:30:00',
-                                    minTime: startTime,
-                                    maxTime: endTime,
-                                    allDaySlot: false,
-                                    selectable: true,
-                                    selectHelper: true,
-                                    timeFormat: 'H:mm',
-                                    slotEventOverlap: false,
+
+                                calendar = $('#calendar').fullCalendar({
+                                    header: {
+                                        left: 'prev,next today',
+                                        center: 'title',
+                                        right: 'month'
+                                    },
+                                    defaultView: 'month',
                                     height: 'auto',
                                     contentHeight: 'auto',
-                                    selectConstraint: {
-                                        start: '00:00',
-                                        end: '24:00',
-                                        dow: [0, 1, 2, 3, 4, 5, 6]
+                                    selectable: true,
+                                    selectHelper: true,
+                                    locale: 'hu',
+                                    firstDay: 1,
+                                    monthNames: ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 
+                                               'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'],
+                                    monthNamesShort: ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 
+                                                    'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'],
+                                    dayNames: ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'],
+                                    dayNamesShort: ['Vas', 'Hét', 'Ke', 'Sze', 'Csü', 'Pén', 'Szo'],
+                                    buttonText: {
+                                        today: 'Ma',
+                                        month: 'Hónap'
                                     },
-                                    selectOverlap: false,
-                                    // Add unselect callback
-                                    unselect: function(jsEvent, view) {
-                                        // Prevent automatic unselect
-                                        if (jsEvent) {
-                                            jsEvent.preventDefault();
-                                        }
+                                    businessHours: {
+                                        dow: validDays,
+                                        start: startTime,
+                                        end: endTime
                                     },
-                                    // Update select callback
-                                    select: function(start, end) {
-                                        const dayOfWeek = start.day();
+                                    selectConstraint: 'businessHours',
+                                    dayRender: function(date, cell) {
+                                        const dayOfWeek = date.day();
                                         if (!validDays.includes(dayOfWeek)) {
-                                            calendar.fullCalendar('unselect');
-                                            showAlert('Ez a nap nem tartozik a nyitvatartási időbe', 'error');
-                                            return;
-                                        }
-                                        
-                                        // Check for overlapping events
-                                        const overlappingEvents = calendar.fullCalendar('clientEvents', function(event) {
-                                            return (start.isBefore(event.end) && end.isAfter(event.start));
-                                        });
-
-                                        if (overlappingEvents.length === 0) {
-                                            // Remove any existing selection first
-                                            calendar.fullCalendar('removeEvents', function(evt) {
-                                                return evt.className && evt.className.indexOf('selected-slot') !== -1;
+                                            cell.addClass('fc-disabled-day');
+                                            cell.css({
+                                                'background-color': '#f5f5f5',
+                                                'opacity': '0.6',
+                                                'cursor': 'not-allowed'
                                             });
-
-                                            // Create the new selection event
-                                            const selectionEvent = {
-                                                start: start,
-                                                end: end,
-                                                className: 'selected-slot',
-                                                title: start.format('HH:mm') + '-' + end.format('HH:mm'),
-                                                color: '#2196F3',
-                                                overlap: false,
-                                                editable: false,
-                                                stick: true
-                                            };
-
-                                            // Render the event and make it stick
-                                            calendar.fullCalendar('renderEvent', selectionEvent, true);
-
-                                            // Store the selected date and time
-                                            $('#dataModal').data('selected-date', start.format('YYYY-MM-DD'));
-                                            $('#dataModal').data('selected-time', start.format('HH:mm'));
-
-                                            // Optionally show a confirmation message
-                                            showAlert(`Kiválasztott időpont: ${start.format('YYYY-MM-DD HH:mm')}`, 'success');
+                                        }
+                                    },
+                                    // When a day is clicked in month view
+                                    dayClick: function(date) {
+                                        generateTimeSlots(date, startTime, endTime, providerDuration, providerId);
+                                    },
+                                    // Add this new viewRender callback
+                                    viewRender: function(view) {
+                                        if (view.name === 'agendaDay') {
+                                            // Hide navigation buttons and today button
+                                            $('.fc-prev-button, .fc-next-button, .fc-today-button').hide();
+                                            // Show month button and rename it
+                                            $('.fc-month-button')
+                                                .show()
+                                                .text('Vissza');
+                                            // Hide all-day section
+                                            $('.fc-day-grid').hide();
+                                            $('.fc-divider').hide();
                                         } else {
-                                            showAlert('The selected time slot overlaps with an existing booking.', 'error');
+                                            // In month view
+                                            // Show navigation buttons and today button
+                                            $('.fc-prev-button, .fc-next-button, .fc-today-button').show();
+                                            // Hide month button
+                                            $('.fc-month-button').hide();
+                                            // Show all-day section (if it was hidden)
+                                            $('.fc-day-grid').show();
+                                            $('.fc-divider').show();
                                         }
                                     }
                                 });
-                            },
-                            views: {
-                                month: {
-                                    titleFormat: 'YYYY. MMMM',
-                                    columnHeaderFormat: 'dddd'
-                                },
-                                agendaDay: {
-                                    titleFormat: 'YYYY. MMMM D.',
-                                    columnHeaderFormat: 'dddd'
-                                }
+                            } catch (error) {
+                                console.error('Error parsing working hours:', error);
+                                showAlert('Hiba történt a nyitvatartási idő betöltésekor', 'error');
                             }
-                        });
-                    } catch (error) {
-                        console.error('Error parsing working hours:', error);
-                        showAlert('Hiba történt a nyitvatartási idő betöltésekor', 'error');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching working hours:', error);
-                    showAlert('Hiba történt a nyitvatartási idő lekérdezésekor', 'error');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching working hours:', error);
+                            showAlert('Hiba történt a nyitvatartási idő lekérdezésekor', 'error');
+                        }
+                    });
                 }
             });
         }
@@ -292,6 +287,75 @@ $(document).ready(function() {
                         color: '#ff0000',
                         overlap: false
                     })));
+                }
+            });
+        }
+
+        function generateTimeSlots(date, startTime, endTime, duration, providerId) {
+            const start = moment(date.format('YYYY-MM-DD') + ' ' + startTime);
+            const end = moment(date.format('YYYY-MM-DD') + ' ' + endTime);
+            
+            // Clear previous time slots
+            $('#calendar').fullCalendar('changeView', 'agendaDay', date);
+            $('.fc-time-grid-container').empty().append('<div class="time-slots-container"></div>');
+            
+            const timeSlots = [];
+            let currentTime = start.clone();
+            
+            while (currentTime.isBefore(end)) {
+                const slotEnd = currentTime.clone().add(duration, 'minutes');
+                if (slotEnd.isAfter(end)) break;
+                
+                timeSlots.push({
+                    start: currentTime.clone(),
+                    end: slotEnd
+                });
+                
+                currentTime.add(duration, 'minutes');
+            }
+            
+            // Fetch booked appointments to check availability
+            $.ajax({
+                url: '../controller/providerController.php?action=getBookedAppointments',
+                type: 'POST',
+                data: {
+                    date: date.format('YYYY-MM-DD'),
+                    provider_id: providerId
+                },
+                success: function(response) {
+                    const bookedSlots = JSON.parse(response);
+                    
+                    timeSlots.forEach(slot => {
+                        const isBooked = bookedSlots.some(booked => 
+                            moment(booked.appointment_date).isBetween(
+                                slot.start, 
+                                slot.end, 
+                                null, 
+                                '[)'
+                            )
+                        );
+                        
+                        const timeSlotElement = $('<div>', {
+                            class: 'time-slot' + (isBooked ? ' booked' : ''),
+                            text: `${slot.start.format('HH:mm')} - ${slot.end.format('HH:mm')}`,
+                            data: {
+                                start: slot.start.format('YYYY-MM-DD HH:mm'),
+                                end: slot.end.format('YYYY-MM-DD HH:mm')
+                            }
+                        });
+                        
+                        if (!isBooked) {
+                            timeSlotElement.click(function() {
+                                $('.time-slot').removeClass('selected');
+                                $(this).addClass('selected');
+                                
+                                $('#dataModal').data('selected-date', slot.start.format('YYYY-MM-DD'));
+                                $('#dataModal').data('selected-time', slot.start.format('HH:mm'));
+                            });
+                        }
+                        
+                        $('.time-slots-container').append(timeSlotElement);
+                    });
                 }
             });
         }
