@@ -74,6 +74,113 @@ $(document).ready(function() {
                     calendar = null;
                 }
             });
+
+            // Handle edit service button click
+            $('#editServiceBtn').on('click', function() {
+                const providerId = $('#dataModal').data('provider-id');
+                // Fetch provider details again to prefill
+                $.ajax({
+                    url: '../controller/providerController.php?action=fetch',
+                    type: 'POST',
+                    data: { id: providerId },
+                    success: function(providerResponse) {
+                        const provider = typeof providerResponse === 'string'
+                            ? JSON.parse(providerResponse)
+                            : providerResponse;
+
+                        // Prefill the addServiceForm fields
+                        $('#serviceType').val(provider.type);
+                        $('#serviceName').val(provider.name);
+                        $('#serviceDescription').val(provider.description);
+                        $('#serviceWorkingHours').val(provider.working_hours);
+                        $('#serviceAddress').val(provider.address);
+                        $('#servicePrice').val(provider.price);
+                        $('#serviceDuration').val(provider.duration);
+                        $('#servicePhone').val(provider.phone_number || '');
+
+                        // Disable image upload
+                        $('#serviceImage').prop('disabled', true).closest('.mb-3').hide();
+
+                        // Set edit mode
+                        $('#addServiceForm').data('edit-id', providerId);
+
+                        // Change save button text
+                        $('#saveService').text('Mentés (Szerkesztés)');
+
+                        // Show modal
+                        $('#addServiceModal').modal('show');
+                    }
+                });
+            });
+
+            $('#deleteServiceBtn').on('click', function() {
+                $('#dataModal').modal('hide');
+                setTimeout(function() {
+                    $('#deleteModal').modal('show');
+                }, 400); // Wait for hide animation
+            });
+
+            // If canceled, restore the service modal
+            $('#deleteModal').on('hidden.bs.modal', function() {
+                if (!$('#dataModal').hasClass('show')) {
+                    setTimeout(function() {
+                        $('#dataModal').modal('show');
+                    }, 200);
+                }
+            });
+
+            // On confirm, delete and close both modals
+            $('.btn-delete-confirm').on('click', function() {
+                const providerId = $('#dataModal').data('provider-id');
+                $.ajax({
+                    url: '../controller/ServiceController.php?action=delete',
+                    type: 'POST',
+                    data: { id: providerId },
+                    success: function(response) {
+                        try {
+                            const result = JSON.parse(response);
+                            if (result.status === 'success') {
+                                showAlert('Sikeresen törölted a szolgáltatást!', 'success');
+                                $('#deleteModal').modal('hide');
+                                // Optionally reload after a short delay
+                                setTimeout(() => location.reload(), 800);
+                            } else {
+                                showAlert('Hiba történt a törlés közben.', 'error');
+                            }
+                        } catch (e) {
+                            showAlert('Hiba történt a törlés közben.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showAlert('Hiba történt a törlés közben.', 'error');
+                    }
+                });
+            });
+
+            $('#deleteServiceModal .btn-delete-service-confirm').on('click', function() {
+                const providerId = $(this).data('id');
+                $.ajax({
+                    url: '../controller/ServiceController.php?action=delete',
+                    type: 'POST',
+                    data: { id: providerId },
+                    success: function(response) {
+                        try {
+                            const result = JSON.parse(response);
+                            if (result.status === 'success') {
+                                showAlert('Sikeresen törölted a szolgáltatást!', 'success');
+                                location.reload();
+                            } else {
+                                showAlert('Hiba történt a törlés közben.', 'error');
+                            }
+                        } catch (e) {
+                            showAlert('Hiba történt a törlés közben.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showAlert('Hiba történt a törlés közben.', 'error');
+                    }
+                });
+            });
         }
 
         function fetchProviderDetails(providerId) {
@@ -121,6 +228,14 @@ $(document).ready(function() {
                             </div>`;
                         
                         $('#modalBody').html(providerHtml);
+
+                        // Check if current user is owner
+                        const userId = $('body').data('user-id');
+                        if (userId && provider.user_id == userId) {
+                            $('#adminServiceActions').show();
+                        } else {
+                            $('#adminServiceActions').hide();
+                        }
                     } catch (error) {
                         console.error('Error parsing provider details:', error);
                         showAlert('Error loading provider details', 'error');

@@ -262,7 +262,7 @@ social-media-section a:hover {
     margin-bottom: 10px;
 }
 
-.faq p {
+faq p {
     font-size: 1rem;
     color: var(--text-color);
     margin-left: 0;
@@ -563,6 +563,7 @@ social-media-section a:hover {
     text-align: justify;
     display: flex;
     gap: 20px;
+    position: relative;
 }
 
 #dataModal .modal-body .content {
@@ -855,7 +856,7 @@ footer {
     transition: color 0.3s;
 }
 
-.social-icons a:hover {
+social-icons a:hover {
     color: #ffcc00;
 }
 
@@ -964,5 +965,27 @@ footer {
 
     .info-item span {
         font-size: 0.95rem;
+    }
+}
+
+#dataModal .modal-body {
+    position: relative;
+}
+
+.admin-service-actions {
+    position: absolute;
+    right: 30px;
+    bottom: 60px; /* Adjust this value to move the buttons higher or lower */
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+@media (max-width: 768px) {
+    .admin-service-actions {
+        position: static;
+        justify-content: flex-end;
+        margin-top: 10px;
+        margin-bottom: 0;
     }
 }

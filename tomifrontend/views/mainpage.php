@@ -12,6 +12,28 @@ $ratings = $ratings ?? [];
 $user = $_SESSION['user'];
 $provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
+
+// Pagination setup
+$perPage = 9;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($page - 1) * $perPage;
+
+// Get total count for pagination
+$totalStmt = $db->query("SELECT COUNT(*) FROM providers");
+$totalProviders = $totalStmt->fetchColumn();
+$totalPages = ceil($totalProviders / $perPage);
+
+// Fetch paginated providers
+$stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+    FROM providers p 
+    LEFT JOIN ratings r ON p.id = r.provider_id 
+    GROUP BY p.id
+    ORDER BY p.id DESC
+    LIMIT :offset, :perPage");
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+$stmt->execute();
+$providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -98,14 +120,6 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <div class="container mt-4">
         <div class="row" id="provider-list">
         <?php
-        // Fetch all providers from database
-        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
-                            FROM providers p 
-                            LEFT JOIN ratings r ON p.id = r.provider_id 
-                            GROUP BY p.id");
-        $stmt->execute();
-        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         foreach ($providers as $provider): ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4 provider-item" data-category="<?php echo htmlspecialchars($provider['type']); ?>">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
@@ -125,21 +139,24 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
             </div>
         <?php endforeach; ?>
     </div>
-    </div>
+
+    <!-- Pagination controls -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item<?php if ($i == $page) echo ' active'; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+        </ul>
+    </nav>
+</div>
 
 
 
     <div class="container mt-4">
     <div class="row">
         <?php
-        // Fetch all providers from database
-        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
-                            FROM providers p 
-                            LEFT JOIN ratings r ON p.id = r.provider_id 
-                            GROUP BY p.id");
-        $stmt->execute();
-        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         foreach ($providers as $provider): ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4 base-providers">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
@@ -217,8 +234,49 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                 <?php endif; ?>
                 <button type="button" class="btn btn-success" id="bookAppointment" style="display: none;">Foglalás</button>
             </div>
+            <div id="adminServiceActions" class="admin-service-actions" style="display:none;">
+                <button type="button" class="btn btn-primary me-2" id="editServiceBtn">Szerkesztés</button>
+                <button type="button" class="btn btn-danger" id="deleteServiceBtn">Törlés</button>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- Add a delete confirmation modal (like appointments) if not present already -->
+<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="deleteServiceModalContent">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteServiceModalLabel">Szolgáltatás törlése</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezár"></button>
+      </div>
+      <div class="modal-body">
+        Biztosan törölni szeretnéd ezt a szolgáltatást?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-danger btn-delete-service-confirm">Törlés</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="dataModal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Törlés megerősítése</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezár"></button>
+      </div>
+      <div class="modal-body">
+        Biztosan törölni szeretnéd ezt a szolgáltatást?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-danger btn-delete-confirm">Törlés</button>
+      </div>
+    </div>
+  </div>
 </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -340,6 +398,10 @@ $(function() {
                     <div class="mb-3">
                         <label for="serviceImage" class="form-label">Szolgáltatás kép</label>
                         <input type="file" class="form-control" id="serviceImage" name="image" accept="image/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="servicePhone" class="form-label">Telefonszám</label>
+                        <input type="text" class="form-control" id="servicePhone" name="phone_number" placeholder="+36 12-345-6789">
                     </div>
                 </form>
             </div>
