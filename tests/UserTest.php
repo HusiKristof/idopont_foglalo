@@ -19,18 +19,18 @@ class UserTest extends TestCase
 
     protected function setUp(): void
     {
-        // Mock adatbázis kapcsolat
+    
         $mockDb = $this->createMock(PDO::class);
         $this->userModel = new User($mockDb);
     }
 
     public function testSuccessfulLogin()
     {
-        // Felhasználó adatainak mockolása
+        
         $email = "test@example.com";
         $password = "password123";
 
-        // Felhasználó visszatérési értékének mockolása
+        
         $this->userModel = $this->createMock(User::class);
         $this->userModel->method('login')->willReturn([
             'id' => 1,
