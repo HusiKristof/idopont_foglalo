@@ -1,4 +1,49 @@
 $(document).ready(function() {
+    function performSearch() {
+        const query = $('#provider-search').val().trim();
+        if (query === '') {
+            // If empty, reload to restore paginated view
+            window.location.href = window.location.pathname;
+            return;
+        }
+        $.ajax({
+            url: '../controller/ProviderController.php?action=search',
+            type: 'POST',
+            data: { query: query },
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response);
+                    if (result.status === 'success') {
+                        updateProviderList(result.providers);
+                        $('.pagination').hide();
+                    } else {
+                        $('#provider-list').html('<div class="text-center w-100 mt-4">Nincs találat.</div>');
+                        $('.pagination').hide();
+                    }
+                } catch (e) {
+                    $('#provider-list').html('<div class="text-center w-100 mt-4">Hiba történt a keresés során.</div>');
+                    $('.pagination').hide();
+                }
+            },
+            error: function() {
+                $('#provider-list').html('<div class="text-center w-100 mt-4">Hiba történt a keresés során.</div>');
+                $('.pagination').hide();
+            }
+        });
+    }
+
+    // Search on Enter
+    $('#provider-search').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Search on icon click
+    $('#provider-search-icon').on('click', function() {
+        performSearch();
+    });
+
     $('.filter-button').on('click', function() {
         const type = $(this).data('type');
         
@@ -13,6 +58,7 @@ $(document).ready(function() {
                     const result = JSON.parse(response);
                     if (result.status === 'success') {
                         updateProviderList(result.providers);
+                        $('.pagination').hide();
                         $('.base-providers').hide();
                         // Re-initialize lazy loading
                         $('.lazy').Lazy();

@@ -139,6 +139,25 @@ if ($action === 'fetch') {
         echo json_encode($bookedSlots);
         exit;
     }
+} elseif ($_GET['action'] === 'search' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $query = trim($_POST['query'] ?? '');
+    $stmt = $db->prepare(
+        "SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating
+         FROM providers p
+         LEFT JOIN ratings r ON p.id = r.provider_id
+         WHERE p.name LIKE :q OR p.type LIKE :q OR p.description LIKE :q
+         GROUP BY p.id
+         ORDER BY p.id DESC"
+    );
+    $like = '%' . $query . '%';
+    $stmt->bindValue(':q', $like, PDO::PARAM_STR);
+    $stmt->execute();
+    $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode([
+        'status' => 'success',
+        'providers' => $providers
+    ]);
+    exit;
 }
 
 function validateWorkingHours($workingHours) {
