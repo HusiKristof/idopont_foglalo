@@ -63,8 +63,8 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="dynamic-navbar">
         <div class="island">
-            <input type="text" class="search-input" placeholder="Keresés...">
-            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="provider-search" placeholder="Keresés...">
+            <i class="fas fa-search search-icon" id="provider-search-icon"></i>
 
             <a href="landing.php">
                 <i class="fa fa-home"></i>
