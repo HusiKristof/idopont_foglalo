@@ -105,6 +105,14 @@ $(document).ready(function() {
         });
     }
 
+    // Use event delegation for dynamically loaded provider cards
+    $('#provider-list').off('click').on('click', '.card', function() {
+        const providerId = $(this).data('id');
+        // Fetch and show provider details as before
+        fetchProviderDetails(providerId);
+        $('#dataModal').data('provider-id', providerId).modal('show');
+    });
+
     // Alapértelmezés szerint csak az alap szolgáltatók jelenjenek meg
     $('.provider-item').hide();
 });
