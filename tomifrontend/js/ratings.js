@@ -64,6 +64,8 @@ $(document).ready(function() {
                 console.log('Rating save response:', response);
                 if (response.status === 'success') {
                     alert('Értékelés sikeresen mentve!');
+                    const appointmentId = $('#ratingModal').data('appointment-id');
+                    $(`.rate-button[data-appointment-id="${appointmentId}"]`).hide();
                     $('#ratingModal').modal('hide');
                     // Optionally reload the page to show updated ratings
                     location.reload();

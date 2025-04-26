@@ -332,7 +332,7 @@ $(document).ready(function() {
                                     selectConstraint: 'businessHours',
                                     dayRender: function(date, cell) {
                                         const dayOfWeek = date.day();
-                                        if (!validDays.includes(dayOfWeek)) {
+                                        if (!validDays.includes(dayOfWeek) || date.isBefore(moment(), 'day')) {
                                             cell.addClass('fc-disabled-day');
                                             cell.css({
                                                 'background-color': '#f5f5f5',
@@ -341,29 +341,24 @@ $(document).ready(function() {
                                             });
                                         }
                                     },
-                                    // When a day is clicked in month view
                                     dayClick: function(date) {
+                                        const dayOfWeek = date.day();
+                                        if (!validDays.includes(dayOfWeek) || date.isBefore(moment(), 'day')) {
+                                            return;
+                                        }
                                         generateTimeSlots(date, startTime, endTime, providerDuration, providerId);
                                     },
-                                    // Add this new viewRender callback
                                     viewRender: function(view) {
                                         if (view.name === 'agendaDay') {
-                                            // Hide navigation buttons and today button
                                             $('.fc-prev-button, .fc-next-button, .fc-today-button').hide();
-                                            // Show month button and rename it
                                             $('.fc-month-button')
                                                 .show()
                                                 .text('Vissza');
-                                            // Hide all-day section
                                             $('.fc-day-grid').hide();
                                             $('.fc-divider').hide();
                                         } else {
-                                            // In month view
-                                            // Show navigation buttons and today button
                                             $('.fc-prev-button, .fc-next-button, .fc-today-button').show();
-                                            // Hide month button
                                             $('.fc-month-button').hide();
-                                            // Show all-day section (if it was hidden)
                                             $('.fc-day-grid').show();
                                             $('.fc-divider').show();
                                         }
@@ -414,16 +409,25 @@ $(document).ready(function() {
             $('#calendar').fullCalendar('changeView', 'agendaDay', date);
             $('.fc-time-grid-container').empty().append('<div class="time-slots-container"></div>');
             
+            const now = moment();
+            const isToday = date.isSame(now, 'day');
+
             const timeSlots = [];
             let currentTime = start.clone();
             
             while (currentTime.isBefore(end)) {
                 const slotEnd = currentTime.clone().add(duration, 'minutes');
                 if (slotEnd.isAfter(end)) break;
+
+                let isPast = false;
+                if (isToday && currentTime.isBefore(now, 'minute')) {
+                    isPast = true;
+                }
                 
                 timeSlots.push({
                     start: currentTime.clone(),
-                    end: slotEnd
+                    end: slotEnd,
+                    isPast: isPast
                 });
                 
                 currentTime.add(duration, 'minutes');
@@ -451,7 +455,9 @@ $(document).ready(function() {
                         );
                         
                         const timeSlotElement = $('<div>', {
-                            class: 'time-slot' + (isBooked ? ' booked' : ''),
+                            class: 'time-slot' +
+                                (isBooked ? ' booked' : '') +
+                                (slot.isPast ? ' disabled' : ''),
                             text: `${slot.start.format('HH:mm')} - ${slot.end.format('HH:mm')}`,
                             data: {
                                 start: slot.start.format('YYYY-MM-DD HH:mm'),
@@ -459,13 +465,19 @@ $(document).ready(function() {
                             }
                         });
                         
-                        if (!isBooked) {
+                        if (!isBooked && !slot.isPast) {
                             timeSlotElement.click(function() {
                                 $('.time-slot').removeClass('selected');
                                 $(this).addClass('selected');
                                 
                                 $('#dataModal').data('selected-date', slot.start.format('YYYY-MM-DD'));
                                 $('#dataModal').data('selected-time', slot.start.format('HH:mm'));
+                            });
+                        } else {
+                            timeSlotElement.css({
+                                'background-color': '#eee',
+                                'color': '#aaa',
+                                'cursor': 'not-allowed'
                             });
                         }
                         

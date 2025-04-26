@@ -41,6 +41,14 @@ if ($user['role'] === 'admin') {
 $stmt = $db->prepare($query);
 $stmt->execute([$userId]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Example: after fetching $appointments from DB
+foreach ($appointments as &$appointment) {
+    $stmt = $db->prepare("SELECT COUNT(*) FROM ratings WHERE appointment_id = ? AND user_id = ?");
+    $stmt->execute([$appointment['id'], $_SESSION['user']['id']]);
+    $appointment['already_rated'] = $stmt->fetchColumn() > 0;
+}
+unset($appointment); // break reference
 ?>
 
 <!DOCTYPE html>
@@ -97,59 +105,46 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container mt-4">
         <div class="appointment-list">
             <?php foreach ($appointments as $appointment): ?>
-                <div class="appointment-card">
-                    <div class="appointment-header">
-                        <i class="fas fa-<?php echo htmlspecialchars($appointment['provider_type']); ?>"></i> 
-                        <span class="provider-name"><?php echo htmlspecialchars($appointment['provider_name']); ?></span>
-                        <span class="appointment-status">
+                <div class="appointment-card mb-4 p-3 shadow-sm rounded border">
+                    <div class="appointment-header mb-2">
+                        <strong><?php echo htmlspecialchars($appointment['provider_name']); ?></strong>
+                        <div class="appointment-status text-primary fw-bold">
                             <?php 
                             $status = isset($appointment['status']) ? htmlspecialchars($appointment['status']) : 'N/A';
                             switch ($status) {
-                                case 'confirmed':
-                                    echo 'Elfogadva';
-                                    break;
-                                case 'pending':
-                                    echo 'Megerősítésre vár';
-                                    break;
-                                case 'canceled':
-                                    echo 'Elutasítva';
-                                    break;
-                                default:
-                                    echo $status;
-                                    break;
+                                case 'confirmed': echo 'Elfogadva'; break;
+                                case 'pending': echo 'Megerősítésre vár'; break;
+                                case 'canceled': echo 'Elutasítva'; break;
+                                default: echo $status; break;
                             }
                             ?>
-                        </span>
+                        </div>
                     </div>
-                    <div class="appointment-details">
-                        <p>
-                            <i class="far fa-calendar-alt"></i>
-                            <span class="appointment-date"><?php echo htmlspecialchars(date('Y-m-d', strtotime($appointment['appointment_date']))); ?></span>
-                            <i class="far fa-clock"></i>
-                            <span class="appointment-time"><?php echo htmlspecialchars(date('H:i', strtotime($appointment['appointment_date']))); ?></span>
-                        </p>
-                        <?php if ($user['role'] === 'admin'): ?>
-                            <p>
-                                <i class="fas fa-user"></i>
-                                <span class="user-name"><?php echo htmlspecialchars($appointment['user_name']); ?></span>
-                            </p>
-                        <?php endif; ?>
+                    <hr>
+                    <div class="mb-2">
+                        <i class="far fa-calendar-alt"></i>
+                        <?php echo htmlspecialchars(date('Y-m-d', strtotime($appointment['appointment_date']))); ?>
+                        <i class="far fa-clock ms-2"></i>
+                        <?php echo htmlspecialchars(date('H:i', strtotime($appointment['appointment_date']))); ?>
                     </div>
-                    <?php if ($user['role'] === 'admin'): ?>
-                      <button class="confirm-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-check"></i> Elfogadás</button>
-                      <button class="reject-button" data-id="<?php echo $appointment['id']; ?>"><i class="fas fa-times"></i> Elutasítás</button>
-                    <?php endif; ?>
-                    <button class="delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash-alt"></i> Törlés</button>
-                    <?php if ($user['role'] !== 'admin'): ?>
-                        <button type="button" 
-                                class="btn btn-secondary rate-button" 
-                                data-appointment-id="<?php echo htmlspecialchars($appointment['id']); ?>"
-                                data-provider-id="<?php echo htmlspecialchars($appointment['provider_id']); ?>"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#ratingModal">
-                            Értékelés
-                        </button>
-                    <?php endif; ?>
+                    <div class="mb-2">
+                        <i class="fas fa-user"></i>
+                        <?php echo htmlspecialchars($appointment['user_name']); ?>
+                    </div>
+                    
+                    <div class="mt-3 d-flex gap-2">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success btn-sm confirm-button" data-id="<?php echo $appointment['id']; ?>">
+                                <i class="fas fa-check"></i> Elfogadás
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm reject-button" data-id="<?php echo $appointment['id']; ?>">
+                                <i class="fas fa-times"></i> Elutasítás
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash-alt"></i> Törlés
+                            </button>
+                        </div>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
