@@ -63,7 +63,7 @@
             </a>
         </div>
     </div>
-
+    <div id="time" class="budapest-time"></div>
 
     <div class="account-container">
     <a href="javascript:history.back()" class="back-link">
@@ -88,7 +88,6 @@
     
     <div class="account-actions">
         <button type="button" class="btn btn-primary" onclick="toggleEditForm()">Adatok Módosítása</button>
-        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Fiók Törlése</button>
     </div>
 
     <div id="edit-form" style="display: none; margin-top: 20px;">
@@ -122,6 +121,7 @@
     <script src="../js/alert.js"></script>
     <script src="../js/appointments.js"></script>
     <script src="../js/service.js"></script>
+    <script src="../js/time.js"></script>
 </body>
 </html>
 

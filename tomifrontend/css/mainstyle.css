@@ -449,29 +449,25 @@ faq p {
 /* ------------------------------------------------------------------------------------------------ ACCOUNTSTYLE */
 
 .account-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 30px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    max-width: 400px;
+    min-width: 220px;
+    width: 100%;
+    margin: 32px auto;
+    padding: 32px 24px 24px 24px;
+    border-radius: 18px;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    transition: box-shadow 0.3s, padding 0.3s;
+    position: relative;
 }
 
-.account-container:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    transform: translate(-50%, -55%);
-}
 
 .account-container h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #333;
     font-size: 2em;
+    word-break: break-word;
 }
 
 .account-details {
@@ -480,10 +476,13 @@ faq p {
 
 .detail-item {
     display: flex;
-    justify-content: space-between;
-    padding: 15px 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 0;
     border-bottom: 1px solid #eee;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    gap: 8px;
 }
 
 .detail-item:hover {
@@ -493,10 +492,19 @@ faq p {
 .detail-item label {
     font-weight: bold;
     color: #555;
+    min-width: 120px;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.detail-item span {
+    color: #222;
+    word-break: break-all; /* Only break long words like emails/phones */
 }
 
 .account-actions {
     text-align: center;
+    margin-top: 24px;
 }
 
 .account-actions .btn {
@@ -526,6 +534,27 @@ faq p {
 .account-actions .btn-danger:hover {
     background-color: #c82333;
     transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+    .account-container {
+        max-width: 98vw;
+        min-width: 0;
+        padding: 18px 4vw 18px 4vw;
+    }
+    .account-container h1 {
+        font-size: 1.3em;
+    }
+    .detail-item label {
+        min-width: 90px;
+        font-size: 0.95em;
+    }
+    .detail-item {
+        font-size: 0.98em;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
 }
 
 /* ------------------------------------------------------------------------------------------------ MODALSTYLE */
@@ -988,4 +1017,20 @@ social-icons a:hover {
         margin-top: 10px;
         margin-bottom: 0;
     }
+}
+
+.budapest-time {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.15rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(29,125,255,0.10);
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    margin-top: 8px;
+    font-family: 'Arial', sans-serif;
+    margin: 10px;
 }

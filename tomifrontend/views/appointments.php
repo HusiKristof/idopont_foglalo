@@ -101,6 +101,7 @@ unset($appointment); // break reference
             </a>
         </div>
     </div>
+    <div id="time" class="budapest-time"></div>
 
     <div class="container mt-4">
         <div class="appointment-list">
@@ -235,5 +236,6 @@ unset($appointment); // break reference
     <script src="../js/adminAppointment.js"></script>
     <script src="../js/appointments.js"></script>
     <script src="../js/service.js"></script>
+    <script src="../js/time.js"></script>
 </body>
 </html>

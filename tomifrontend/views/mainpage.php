@@ -87,6 +87,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
         </div>
     </div>
+    <div id="time" class="budapest-time"></div>
 
     <div class="filter-section">
     <div class="filter-button" data-type="Egészségügy">
@@ -289,6 +290,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../js/alert.js"></script>
     <script src="../js/service.js"></script>
     <script src="../js/filter.js"></script>
+    <script src="../js/time.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
