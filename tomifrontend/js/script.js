@@ -90,3 +90,53 @@ document.querySelectorAll('a').forEach(link => {
         }
     });
 });
+
+$(function() {
+    const $password = $('#register-password');
+    const $bar = $('#password-strength-bar');
+    const $hints = $('#password-hints');
+
+    function checkStrength(pw) {
+        let score = 0;
+        let hints = [];
+
+        if (pw.length >= 8) score++; else hints.push('Legalább 8 karakter hosszú legyen');
+        if (/[A-Z]/.test(pw)) score++; else hints.push('Tartalmazzon nagybetűt');
+        if (/[0-9]/.test(pw)) score++; else hints.push('Tartalmazzon számot');
+        if (/[^A-Za-z0-9]/.test(pw)) score++; else hints.push('Tartalmazzon speciális karaktert (pl. !@#$%)');
+
+        return {score, hints};
+    }
+
+    $password.on('input', function() {
+        const val = $(this).val();
+        const {score, hints} = checkStrength(val);
+
+        // Progress bar color and width
+        let color = '#ff4d4d', width = '25%';
+        if (score === 2) { color = '#ffc107'; width = '50%'; }
+        if (score === 3) { color = '#ffe066'; width = '75%'; }
+        if (score === 4) { color = '#28a745'; width = '100%'; }
+
+        $bar.css({background: color, width: width});
+
+        // Show hints
+        if (val.length > 0 && hints.length > 0) {
+            $hints.html(hints.map(h => `<li>${h}</li>`).join(''));
+        } else {
+            $hints.html('');
+        }
+    });
+
+    // Prevent form submit if password is not strong enough
+    $('#registerForm').on('submit', function(e) {
+        const val = $password.val();
+        const {score, hints} = checkStrength(val);
+        if (score < 4) {
+            e.preventDefault();
+            $bar.css({background: '#ff4d4d', width: '25%'});
+            $hints.html('<li>A jelszónak legalább 8 karakterből kell állnia, tartalmaznia kell nagybetűt, számot és speciális karaktert.</li>');
+            $password.focus();
+        }
+    });
+});

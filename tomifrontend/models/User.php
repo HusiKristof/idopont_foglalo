@@ -39,12 +39,28 @@ class User {
     public function register($name, $email, $phone, $password) {
         try {
             // Check if email already exists
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Érvénytelen email cím formátum.'
+                ];
+            }
             $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 return [
                     'status' => 'error',
-                    'message' => 'Email already exists'
+                    'message' => 'Ez az email cím már foglalt.'
+                ];
+            }
+
+            // Check if phone already exists
+            $stmt = $this->db->prepare("SELECT id FROM users WHERE phone = ?");
+            $stmt->execute([$phone]);
+            if ($stmt->fetch()) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Ez a telefonszám már foglalt.'
                 ];
             }
 

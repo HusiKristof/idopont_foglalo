@@ -61,14 +61,11 @@ $(document).ready(function() {
                 rating: rating
             },
             success: function(response) {
-                console.log('Rating save response:', response);
                 if (response.status === 'success') {
                     alert('Értékelés sikeresen mentve!');
-                    const appointmentId = $('#ratingModal').data('appointment-id');
-                    $(`.rate-button[data-appointment-id="${appointmentId}"]`).hide();
+                    $('.rate-button[data-appointment-id="' + appointmentId + '"]').hide();
                     $('#ratingModal').modal('hide');
-                    // Optionally reload the page to show updated ratings
-                    location.reload();
+                    // location.reload(); // You can comment this out if you want instant hide
                 } else {
                     alert('Hiba történt az értékelés mentésekor: ' + response.message);
                 }

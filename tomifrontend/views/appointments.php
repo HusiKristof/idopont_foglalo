@@ -3,7 +3,7 @@ require_once '../database.php';
 session_start();
 
 if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -127,23 +127,40 @@ unset($appointment); // break reference
                         <i class="far fa-clock ms-2"></i>
                         <?php echo htmlspecialchars(date('H:i', strtotime($appointment['appointment_date']))); ?>
                     </div>
-                    <div class="mb-2">
-                        <i class="fas fa-user"></i>
-                        <?php echo htmlspecialchars($appointment['user_name']); ?>
-                    </div>
-                    
+                    <?php if ($user['role'] === 'admin' && isset($appointment['user_name'])): ?>
+                        <div class="mb-2">
+                            <i class="fas fa-user"></i>
+                            <?php echo htmlspecialchars($appointment['user_name']); ?>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="mt-3 d-flex gap-2">
-                        <div class="btn-group" role="group">
+                        <?php if ($user['role'] === 'admin'): ?>
                             <button class="btn btn-success btn-sm confirm-button" data-id="<?php echo $appointment['id']; ?>">
                                 <i class="fas fa-check"></i> Elfogadás
                             </button>
                             <button class="btn btn-outline-secondary btn-sm reject-button" data-id="<?php echo $appointment['id']; ?>">
                                 <i class="fas fa-times"></i> Elutasítás
                             </button>
-                            <button class="btn btn-danger btn-sm delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                <i class="fas fa-trash-alt"></i> Törlés
-                            </button>
-                        </div>
+                        <?php else: ?>
+                            <?php
+                                $now = new DateTime();
+                                $appointmentDate = new DateTime($appointment['appointment_date']);
+                            ?>
+                            <?php if (!$appointment['already_rated'] && $appointmentDate < $now): ?>
+                                <button type="button" 
+                                        class="btn btn-secondary rate-button" 
+                                        data-appointment-id="<?php echo htmlspecialchars($appointment['id']); ?>"
+                                        data-provider-id="<?php echo htmlspecialchars($appointment['provider_id']); ?>"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#ratingModal">
+                                    Értékelés
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <button class="btn btn-danger btn-sm delete-button" data-id="<?php echo $appointment['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash-alt"></i> Törlés
+                        </button>
                     </div>
                 </div>
             <?php endforeach; ?>

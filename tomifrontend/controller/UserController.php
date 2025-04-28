@@ -29,11 +29,9 @@ if ($action === 'login') {
             $data['phone'],
             $data['password']
         );
-        
         echo json_encode($result);
+        exit;
     }
-} elseif ($action === 'logout') {
-    session_destroy();
-    echo json_encode(['status' => 'success']);
 }
+// Remove or comment out any other registration logic below this point!
 ?>
