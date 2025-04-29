@@ -3,51 +3,35 @@ require_once '../models/User.php';
 require_once '../database.php'; // Database connection
 session_start();
 
+header('Content-Type: application/json');
+
 $action = isset($_GET["action"]) ? $_GET["action"] : null;
 
 $userModel = new User($db);
 
 if ($action === 'login') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $user = $userModel->login($email, $password);
-        if ($user) {
-            $_SESSION['user'] = [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'phone' => $user['phone'],
-                'role' => $user['role']  // Added role to session
-            ];
-            header('Location: ../views/mainpage.php');
-            exit();
-        } else {
-            echo "Invalid credentials!";
+        $data = json_decode(file_get_contents('php://input'), true);
+        $result = $userModel->login($data['email'], $data['password']);
+        
+        if ($result['status'] === 'success') {
+            $_SESSION['user'] = $result['user'];
         }
+        
+        echo json_encode($result);
     }
 } elseif ($action === 'register') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $phone = $_POST['phone'];
-        $password = $_POST['password'];
-
-        if ($userModel->register($name, $email, $phone, $password)) {
-            header('Location: ../index.php');
-            exit();
-        } else {
-            echo "Registration failed!";
-        }
+        $data = json_decode(file_get_contents('php://input'), true);
+        $result = $userModel->register(
+            $data['name'],
+            $data['email'], 
+            $data['phone'],
+            $data['password']
+        );
+        echo json_encode($result);
+        exit;
     }
-}/*  elseif ($action === 'delete_appointment') {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $appointmentId = $_POST['appointment_id'];
-        $stmt = $db->prepare("DELETE FROM appointments WHERE id = ?");
-        if ($stmt->execute([$appointmentId])) {
-            echo json_encode(['status' => 'success']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to delete appointment']);
-        }
-    }
-} */
+}
+// Remove or comment out any other registration logic below this point!
+?>

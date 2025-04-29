@@ -83,4 +83,57 @@ if ($action === 'add') {
         }
     }
 }
+
+if ($action === 'edit') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? null;
+        $userId = $_SESSION['user']['id'] ?? null;
+        $type = $_POST['type'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $working_hours = $_POST['working_hours'] ?? '';
+        $address = $_POST['address'] ?? '';
+        $phone_number = $_POST['phone_number'] ?? '';
+        $price = $_POST['price'] ?? 0;
+        $duration = $_POST['duration'] ?? 0;
+
+        if (!$id || !$userId) {
+            echo json_encode(['status' => 'error', 'message' => 'Missing ID or user']);
+            exit;
+        }
+
+        $stmt = $db->prepare("UPDATE providers SET type=?, description=?, name=?, working_hours=?, address=?, phone_number=?, price=?, duration=? WHERE id=? AND user_id=?");
+        $result = $stmt->execute([
+            $type,
+            $description,
+            $name,
+            $working_hours,
+            $address,
+            $phone_number,
+            $price,
+            $duration,
+            $id,
+            $userId
+        ]);
+        echo json_encode([
+            'status' => $result ? 'success' : 'error',
+            'message' => $result ? 'Service updated successfully' : 'Failed to update service'
+        ]);
+        exit;
+    }
+}
+
+if ($action === 'delete') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'];
+        $userId = $_SESSION['user']['id'];
+        $stmt = $db->prepare("DELETE FROM providers WHERE id=? AND user_id=?");
+        $result = $stmt->execute([$id, $userId]);
+        echo json_encode([
+            'status' => $result ? 'success' : 'error',
+            'message' => $result ? 'Service deleted successfully' : 'Failed to delete service'
+        ]);
+    }
+    exit;
+}
 ?>

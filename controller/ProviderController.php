@@ -12,26 +12,11 @@ $action = $_GET['action'] ?? '';
 $providerModel = new Provider($db);
 
 if ($action === 'fetch') {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-        $provider_id = (int)$_POST['id'];
-        $provider = $providerModel->getProviderById($provider_id);
-        if ($provider) {
-            echo '<div class="provider-details">';
-            echo '<h4 class="mb-4">' . htmlspecialchars($provider['name']) . '</h4>';
-            echo '<div class="detail-row">';
-            echo '<p><strong>Leírás:</strong> ' . htmlspecialchars($provider['description']) . '</p>';
-            echo '<p><strong>Szolgáltatás:</strong> ' . htmlspecialchars($provider['type']) . '</p>';
-            echo '<p><strong>Ár:</strong> ' . htmlspecialchars($provider['price']) . ' Ft</p>';
-            echo '<p><strong>Időtartam:</strong> ' . htmlspecialchars($provider['duration']) . ' perc</p>';
-            echo '<p><strong>Telefon szám:</strong> ' . htmlspecialchars($provider['phone_number']) . '</p>';
-            echo '<p><strong>Nyitvatartás:</strong> ' . htmlspecialchars($provider['working_hours']) . '</p>';
-            echo '<p><strong>Cím:</strong> ' . htmlspecialchars($provider['address']) . '</p>';
-            echo '</div>';
-            echo '</div>';
-        } else {
-            echo 'Szolgáltató nem található.';
-        }
-    }
+    header('Content-Type: application/json');
+    $id = $_POST['id'];
+    $provider = $providerModel->getProviderById($id);
+    echo json_encode($provider);
+    exit;
 } elseif ($action === 'book') {
     $user_id = $_SESSION['user']['id'] ?? null;
     if (!$user_id) {
@@ -154,6 +139,25 @@ if ($action === 'fetch') {
         echo json_encode($bookedSlots);
         exit;
     }
+} elseif ($_GET['action'] === 'search' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $query = trim($_POST['query'] ?? '');
+    $stmt = $db->prepare(
+        "SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating
+         FROM providers p
+         LEFT JOIN ratings r ON p.id = r.provider_id
+         WHERE p.name LIKE :q OR p.type LIKE :q OR p.description LIKE :q
+         GROUP BY p.id
+         ORDER BY p.id DESC"
+    );
+    $like = '%' . $query . '%';
+    $stmt->bindValue(':q', $like, PDO::PARAM_STR);
+    $stmt->execute();
+    $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode([
+        'status' => 'success',
+        'providers' => $providers
+    ]);
+    exit;
 }
 
 function validateWorkingHours($workingHours) {

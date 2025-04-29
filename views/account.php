@@ -26,10 +26,7 @@
 <div id="floating-box" class="floating-box">
     <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
     <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
-    <label for="darkmode-toggle" class="darkmode-toggle-label">
-        <i class="fa-solid fa-sun"></i>
-        <i class="fa-solid fa-moon"></i>
-    </label>
+    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
 </div>
 
 <!-- A visszahozó nyíl -->
@@ -41,7 +38,7 @@
             <input type="text" class="search-input" placeholder="Keresés...">
             <i class="fas fa-search search-icon"></i>
 
-            <a href="landing.php">
+            <a href="landing.html">
                 <i class="fa fa-home"></i>
                 <span>Főoldal</span>
             </a>
@@ -66,7 +63,7 @@
             </a>
         </div>
     </div>
-
+    <div id="time" class="budapest-time"></div>
 
     <div class="account-container">
     <a href="javascript:history.back()" class="back-link">
@@ -91,7 +88,6 @@
     
     <div class="account-actions">
         <button type="button" class="btn btn-primary" onclick="toggleEditForm()">Adatok Módosítása</button>
-        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Fiók Törlése</button>
     </div>
 
     <div id="edit-form" style="display: none; margin-top: 20px;">
@@ -125,6 +121,7 @@
     <script src="../js/alert.js"></script>
     <script src="../js/appointments.js"></script>
     <script src="../js/service.js"></script>
+    <script src="../js/time.js"></script>
 </body>
 </html>
 

@@ -127,6 +127,12 @@ body.dark-mode {
     flex-direction: column;
     justify-content: flex-end;
     position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Example animation */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card img {
@@ -227,7 +233,7 @@ body.dark-mode {
     transition: color 0.3s;
 }
 
-.social-media-section a:hover {
+social-media-section a:hover {
     color: var(--hover-color);
 }
 
@@ -256,7 +262,7 @@ body.dark-mode {
     margin-bottom: 10px;
 }
 
-.faq p {
+faq p {
     font-size: 1rem;
     color: var(--text-color);
     margin-left: 0;
@@ -443,29 +449,25 @@ body.dark-mode {
 /* ------------------------------------------------------------------------------------------------ ACCOUNTSTYLE */
 
 .account-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 30px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    max-width: 400px;
+    min-width: 220px;
+    width: 100%;
+    margin: 32px auto;
+    padding: 32px 24px 24px 24px;
+    border-radius: 18px;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    transition: box-shadow 0.3s, padding 0.3s;
+    position: relative;
 }
 
-.account-container:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    transform: translate(-50%, -55%);
-}
 
 .account-container h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #333;
     font-size: 2em;
+    word-break: break-word;
 }
 
 .account-details {
@@ -474,10 +476,13 @@ body.dark-mode {
 
 .detail-item {
     display: flex;
-    justify-content: space-between;
-    padding: 15px 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 0;
     border-bottom: 1px solid #eee;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    gap: 8px;
 }
 
 .detail-item:hover {
@@ -487,10 +492,19 @@ body.dark-mode {
 .detail-item label {
     font-weight: bold;
     color: #555;
+    min-width: 120px;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.detail-item span {
+    color: #222;
+    word-break: break-all; /* Only break long words like emails/phones */
 }
 
 .account-actions {
     text-align: center;
+    margin-top: 24px;
 }
 
 .account-actions .btn {
@@ -520,6 +534,27 @@ body.dark-mode {
 .account-actions .btn-danger:hover {
     background-color: #c82333;
     transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+    .account-container {
+        max-width: 98vw;
+        min-width: 0;
+        padding: 18px 4vw 18px 4vw;
+    }
+    .account-container h1 {
+        font-size: 1.3em;
+    }
+    .detail-item label {
+        min-width: 90px;
+        font-size: 0.95em;
+    }
+    .detail-item {
+        font-size: 0.98em;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
 }
 
 /* ------------------------------------------------------------------------------------------------ MODALSTYLE */
@@ -557,6 +592,7 @@ body.dark-mode {
     text-align: justify;
     display: flex;
     gap: 20px;
+    position: relative;
 }
 
 #dataModal .modal-body .content {
@@ -671,6 +707,51 @@ body.dark-mode {
     opacity: 0.8;
 }
 
+/* Time Slots Styling */
+.time-slots-container {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    background-color: var(--background-color);
+}
+
+.time-slot {
+    margin: 5px;
+    padding: 10px 15px;
+    background-color: var(--background-color);
+    border: 2px solid #2196F3;
+    color: #2196F3;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.time-slot:hover, 
+.time-slot.selected {
+    background-color: #2196F3;
+    color: var(--text-color-inverse);
+}
+
+.time-slot.booked {
+    background-color: #ff0000;
+    border-color: #ff0000;
+    color: var(--text-color-inverse);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.fc-disabled-day {
+    background-color: var(--disabled-background) !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
 /* ------------------------------------------------------------------------------------------------ MODALSTYLE */
 
 
@@ -746,8 +827,8 @@ body.dark-mode {
 
 
 footer {
-    background-color: #F5F5F5;
-    color: black;
+    background-color: black;
+    color: white;
     padding: 20px 0;
     font-family: Arial, sans-serif;
 }
@@ -782,7 +863,7 @@ footer {
 }
 
 .footer-section ul li a {
-    color: black;
+    color: white;
     text-decoration: none;
     font-size: 14px;
 }
@@ -794,18 +875,17 @@ footer {
 .logo img {
     width: 150px;
     border-radius: 50%;
-    
 }
 
 .social-icons a {
     display: inline-block;
     margin: 0 8px;
-    color: black !important;
+    color: white;
     font-size: 24px;
     transition: color 0.3s;
 }
 
-.social-icons a:hover {
+social-icons a:hover {
     color: #ffcc00;
 }
 
@@ -817,3 +897,140 @@ footer {
 }
 
 /*--------------------------------------------------------------- FOOTER*/
+
+/* Provider Details Styling */
+.provider-container {
+    padding: 20px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.provider-header {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.provider-header h3 {
+    font-size: 1.5rem;
+    color: black;
+    margin: 0 0 10px 0;
+}
+
+.provider-type {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: #2196F3;
+    color: black;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.provider-body {
+    padding: 10px 0;
+}
+
+.provider-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.description {
+    color: black;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item i {
+    color: #2196F3;
+    width: 20px;
+    text-align: center;
+}
+
+.info-item span {
+    color: black;
+    font-size: 1rem;
+}
+
+/* Hover effects */
+.info-item:hover {
+    background-color: var(--hover-background);
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin: 0 -10px;
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .provider-container {
+        padding: 15px;
+    }
+
+    .provider-header h3 {
+        font-size: 1.3rem;
+    }
+
+    .description {
+        font-size: 0.95rem;
+    }
+
+    .info-item span {
+        font-size: 0.95rem;
+    }
+}
+
+#dataModal .modal-body {
+    position: relative;
+}
+
+.admin-service-actions {
+    position: absolute;
+    right: 30px;
+    bottom: 60px; /* Adjust this value to move the buttons higher or lower */
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+@media (max-width: 768px) {
+    .admin-service-actions {
+        position: static;
+        justify-content: flex-end;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+}
+
+.budapest-time {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.15rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(29,125,255,0.10);
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    margin-top: 8px;
+    font-family: 'Arial', sans-serif;
+    margin: 10px;
+}

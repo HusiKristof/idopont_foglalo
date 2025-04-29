@@ -1,15 +1,10 @@
 <?php
-
-
-
-// Most már használhatod a dekódolt adatokat
-$userId = $decoded->userId;
 session_start();
 require_once '../models/rating.php';
 require_once '../database.php';
 
 if (!isset($_SESSION['user'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -17,6 +12,28 @@ $ratings = $ratings ?? [];
 $user = $_SESSION['user'];
 $provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
+
+// Pagination setup
+$perPage = 9;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($page - 1) * $perPage;
+
+// Get total count for pagination
+$totalStmt = $db->query("SELECT COUNT(*) FROM providers");
+$totalProviders = $totalStmt->fetchColumn();
+$totalPages = ceil($totalProviders / $perPage);
+
+// Fetch paginated providers
+$stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
+    FROM providers p 
+    LEFT JOIN ratings r ON p.id = r.provider_id 
+    GROUP BY p.id
+    ORDER BY p.id DESC
+    LIMIT :offset, :perPage");
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+$stmt->execute();
+$providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +48,6 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <link rel="stylesheet" href="../css/darkmode.css">
     <link rel="shortcut icon" href="logo.jpg">
     <title>Felfedezés</title>
-    
 </head>
 <body data-user-id='<?php echo htmlspecialchars($user['id']); ?>'>
 
@@ -39,10 +55,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 <div id="floating-box" class="floating-box">
     <button id="close-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
     <input type="checkbox" id="darkmode-toggle" class="darkmode-toggle-input"/>
-    <label for="darkmode-toggle" class="darkmode-toggle-label">
-        <i class="fa-solid fa-sun"></i>
-        <i class="fa-solid fa-moon"></i>
-    </label>
+    <label for="darkmode-toggle" class="darkmode-toggle-label"></label>
 </div>
 
 <!-- A visszahozó nyíl -->
@@ -50,8 +63,8 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
 
     <div class="dynamic-navbar">
         <div class="island">
-            <input type="text" class="search-input" placeholder="Keresés...">
-            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="provider-search" placeholder="Keresés...">
+            <i class="fas fa-search search-icon" id="provider-search-icon"></i>
 
             <a href="landing.php">
                 <i class="fa fa-home"></i>
@@ -74,6 +87,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
             </a>
         </div>
     </div>
+    <div id="time" class="budapest-time"></div>
 
     <div class="filter-section">
     <div class="filter-button" data-type="Egészségügy">
@@ -107,14 +121,6 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <div class="container mt-4">
         <div class="row" id="provider-list">
         <?php
-        // Fetch all providers from database
-        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
-                            FROM providers p 
-                            LEFT JOIN ratings r ON p.id = r.provider_id 
-                            GROUP BY p.id");
-        $stmt->execute();
-        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         foreach ($providers as $provider): ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4 provider-item" data-category="<?php echo htmlspecialchars($provider['type']); ?>">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
@@ -134,21 +140,24 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
             </div>
         <?php endforeach; ?>
     </div>
-    </div>
+
+    <!-- Pagination controls -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item<?php if ($i == $page) echo ' active'; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+        </ul>
+    </nav>
+</div>
 
 
 
     <div class="container mt-4">
     <div class="row">
         <?php
-        // Fetch all providers from database
-        $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
-                            FROM providers p 
-                            LEFT JOIN ratings r ON p.id = r.provider_id 
-                            GROUP BY p.id");
-        $stmt->execute();
-        $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         foreach ($providers as $provider): ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4 base-providers">
                 <div class="card" data-id="<?php echo htmlspecialchars($provider['id']); ?>">
@@ -226,8 +235,49 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                 <?php endif; ?>
                 <button type="button" class="btn btn-success" id="bookAppointment" style="display: none;">Foglalás</button>
             </div>
+            <div id="adminServiceActions" class="admin-service-actions" style="display:none;">
+                <button type="button" class="btn btn-primary me-2" id="editServiceBtn">Szerkesztés</button>
+                <button type="button" class="btn btn-danger" id="deleteServiceBtn">Törlés</button>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- Add a delete confirmation modal (like appointments) if not present already -->
+<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="deleteServiceModalContent">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteServiceModalLabel">Szolgáltatás törlése</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezár"></button>
+      </div>
+      <div class="modal-body">
+        Biztosan törölni szeretnéd ezt a szolgáltatást?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-danger btn-delete-service-confirm">Törlés</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="dataModal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Törlés megerősítése</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezár"></button>
+      </div>
+      <div class="modal-body">
+        Biztosan törölni szeretnéd ezt a szolgáltatást?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-danger btn-delete-confirm">Törlés</button>
+      </div>
+    </div>
+  </div>
 </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -240,6 +290,7 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
     <script src="../js/alert.js"></script>
     <script src="../js/service.js"></script>
     <script src="../js/filter.js"></script>
+    <script src="../js/time.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
@@ -248,11 +299,57 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
         $(function() {
             $('.lazy').Lazy();
         });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        $(window).on('scroll', debounce(function() {
+            console.log('Scroll event handled');
+        }, 100));
     </script>
 
     <script>
     window.userId = <?php echo json_encode($user['id'] ?? null); ?>;
     window.providerId = <?php echo json_encode($provider_id ?? null); ?>;
+</script>
+
+<script>
+$(function() {
+    $('.lazy').Lazy();
+
+    // Re-initialize lazy loading after AJAX filter or pagination
+    $(document).on('ajaxComplete', function() {
+        $('.lazy').Lazy();
+    });
+
+    // Event delegation for dynamically loaded cards
+    $('#provider-list').on('click', '.card', function() {
+        const providerId = $(this).data('id');
+        $('#dataModal').data('provider-id', providerId);
+
+        // Dynamically load FullCalendar scripts only when needed
+        if (!window.fullCalendarLoaded) {
+            $.when(
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'),
+                $.getScript('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js')
+            ).done(function() {
+                window.fullCalendarLoaded = true;
+                // Now show modal and initialize calendar
+                $('#dataModal').modal('show');
+                // ...initialize calendar here...
+            });
+        } else {
+            $('#dataModal').modal('show');
+            // ...initialize calendar here...
+        }
+    });
+});
 </script>
 
 <?php if (isset($_SESSION['user']) && isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== 'customer'): ?>
@@ -303,6 +400,10 @@ $ratings = array_column($ratings, 'average_rating', 'provider_id');
                     <div class="mb-3">
                         <label for="serviceImage" class="form-label">Szolgáltatás kép</label>
                         <input type="file" class="form-control" id="serviceImage" name="image" accept="image/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="servicePhone" class="form-label">Telefonszám</label>
+                        <input type="text" class="form-control" id="servicePhone" name="phone_number" placeholder="+36 12-345-6789">
                     </div>
                 </form>
             </div>
