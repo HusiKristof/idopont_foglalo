@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Handle service form submission
     $('#saveService').on('click', function() {
         const form = document.getElementById('addServiceForm');
         const formData = new FormData(form);

@@ -13,7 +13,7 @@ $action = $_GET['action'] ?? '';
 if ($action === 'add') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
-            // Handle image upload
+            //img upload
             $targetDir = "../uploads/";
             if (!file_exists($targetDir)) {
                 mkdir($targetDir, 0777, true);
@@ -24,17 +24,16 @@ if ($action === 'add') {
             $newFileName = uniqid() . '.' . $imageFileType;
             $targetFile = $targetDir . $newFileName;
             
-            // Store the relative path that will be used in the img src
-            $relativePath = '/uploads/' . $newFileName;  // This is the path we'll store in database
+            $relativePath = '/uploads/' . $newFileName;  //path az adatbázisba
 
-            // Check if image file is valid
+            //kep validacio
             $validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             if (!in_array($imageFileType, $validExtensions)) {
                 throw new Exception('Invalid file type. Only JPG, JPEG, PNG & GIF files are allowed.');
             }
 
             if (move_uploaded_file($imageFile['tmp_name'], $targetFile)) {
-                // Add this validation before inserting the provider
+                //validacio a provider adatokra hozzaadas elott
 
                 $workingHours = $_POST['working_hours'];
                 if (!preg_match('/^(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)-(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)\s([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/', $workingHours)) {
@@ -45,7 +44,7 @@ if ($action === 'add') {
                     exit;
                 }
 
-                // Insert provider data including image_path
+                //provider adatok beszúrása
                 $stmt = $db->prepare("INSERT INTO providers (user_id, type, description, name, working_hours, address, phone_number, price, duration, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 
                 $userId = $_SESSION['user']['id'];
@@ -61,7 +60,7 @@ if ($action === 'add') {
                     $phoneNumber,
                     $_POST['price'],
                     $_POST['duration'],
-                    $relativePath  // Add the image path to the database
+                    $relativePath  //image path az adatbázisba
                 ]);
 
                 if ($result) {

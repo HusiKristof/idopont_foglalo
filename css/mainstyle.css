@@ -499,7 +499,7 @@ faq p {
 
 .detail-item span {
     color: #222;
-    word-break: break-all; /* Only break long words like emails/phones */
+    word-break: break-all;
 }
 
 .account-actions {

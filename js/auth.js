@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    // Login form submission
+    //login form
     $('#loginForm').on('submit', function(e) {
         e.preventDefault();
         console.log('Login form submitted');
@@ -30,7 +30,7 @@ $(document).ready(function() {
         });
     });
 
-    // Registration form submission
+    //regisztraciós form
     $('#registerForm').on('submit', function(e) {
         e.preventDefault();
         $('#register-error-message').hide();
@@ -40,14 +40,14 @@ $(document).ready(function() {
         const phone = $('#reg-phone').val();
         const password = $('#reg-password').val();
 
-        // Email regex: must be something@something.domain (domain at least 2 chars)
+        //email format
         const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
         if (!emailPattern.test(email)) {
             showRegisterError('Érvénytelen email cím formátum');
             return;
         }
 
-        // Phone number format
+        //telefon format
         const phonePattern = /^\+36 \d{2}-\d{3}-\d{4}$/;
         if (!phonePattern.test(phone)) {
             showRegisterError('Érvénytelen telefonszám formátum');
@@ -75,7 +75,7 @@ $(document).ready(function() {
                 if (response.status === 'success') {
                     $('#register-error-message').css('color', '#28a745').text('Sikeres regisztráció! Átirányítás...').show();
                     setTimeout(function() {
-                        window.location.reload(); // or window.location.href = 'index.php';
+                        window.location.reload(); 
                     }, 1200);
                 } else {
                     showRegisterError(response.message || 'Sikertelen regisztráció');
@@ -91,7 +91,7 @@ $(document).ready(function() {
         const val = $(this).val();
         const {score, hints} = checkPasswordStrength(val);
 
-        // Progress bar color and width
+        //progress csik
         let color = '#ff4d4d', width = '25%';
         if (score === 2) { color = '#ffc107'; width = '50%'; }
         if (score === 3) { color = '#ffe066'; width = '75%'; }

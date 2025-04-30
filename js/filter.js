@@ -2,7 +2,7 @@ $(document).ready(function() {
     function performSearch() {
         const query = $('#provider-search').val().trim();
         if (query === '') {
-            // If empty, reload to restore paginated view
+            //ha ures a keresés, akkor visszaállítja az alapértelmezett állapotot
             window.location.href = window.location.pathname;
             return;
         }
@@ -32,14 +32,14 @@ $(document).ready(function() {
         });
     }
 
-    // Search on Enter
+    //search enter gombal
     $('#provider-search').on('keydown', function(e) {
         if (e.key === 'Enter') {
             performSearch();
         }
     });
 
-    // Search on icon click
+    //search on click
     $('#provider-search-icon').on('click', function() {
         performSearch();
     });
@@ -60,7 +60,7 @@ $(document).ready(function() {
                         updateProviderList(result.providers);
                         $('.pagination').hide();
                         $('.base-providers').hide();
-                        // Re-initialize lazy loading
+                        //lazyloading megin
                         $('.lazy').Lazy();
                     } else {
                         alert('Error: ' + result.message);
@@ -151,10 +151,9 @@ $(document).ready(function() {
         });
     }
 
-    // Use event delegation for dynamically loaded provider cards
     $('#provider-list').off('click').on('click', '.card', function() {
         const providerId = $(this).data('id');
-        // Fetch and show provider details as before
+    
         fetchProviderDetails(providerId);
         $('#dataModal').data('provider-id', providerId).modal('show');
     });

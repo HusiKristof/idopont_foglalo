@@ -1,6 +1,6 @@
 <?php
 require_once '../models/User.php';
-require_once '../database.php'; // Database connection
+require_once '../database.php'; //adatbázis kapcsolat
 session_start();
 
 header('Content-Type: application/json');
@@ -33,5 +33,4 @@ if ($action === 'login') {
         exit;
     }
 }
-// Remove or comment out any other registration logic below this point!
 ?>

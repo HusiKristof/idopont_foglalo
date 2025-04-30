@@ -1,11 +1,10 @@
 <?php
     session_start();
     if (!isset($_SESSION['user'])) {
-        header('Location: index.php'); // Redirect to login if not logged in
+        header('Location: index.php'); //redirect
         exit();
     }
     
-    // Get user information from the session
     $user = $_SESSION['user'];
 ?>
 

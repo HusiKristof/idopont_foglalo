@@ -10,7 +10,7 @@ if (!isset($_SESSION['user'])) {
 $user = $_SESSION['user'];
 $userId = $user['id'];
 
-// Feltételezve, hogy van egy adatbázis kapcsolat $db
+//Feltételezve, hogy van egy adatbázis kapcsolat $db
 $appointmentId = $_GET['appointment_id'] ?? null;
 
 if ($appointmentId) {
@@ -19,7 +19,7 @@ if ($appointmentId) {
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 } 
 
-// If user is admin
+//ha a user admin
 if ($user['role'] === 'admin') {
     $query = "SELECT a.id, a.appointment_date, u.name AS user_name, 
              p.name AS provider_name, p.type AS provider_type, 
@@ -29,7 +29,7 @@ if ($user['role'] === 'admin') {
              JOIN providers p ON a.provider_id = p.id 
              WHERE p.user_id = ?";
 } else {
-    // If user is not admin
+    //ha nem admin
     $query = "SELECT a.id, a.appointment_date, a.status, 
              p.name AS provider_name, p.type AS provider_type,
              a.provider_id
@@ -42,13 +42,12 @@ $stmt = $db->prepare($query);
 $stmt->execute([$userId]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Example: after fetching $appointments from DB
 foreach ($appointments as &$appointment) {
     $stmt = $db->prepare("SELECT COUNT(*) FROM ratings WHERE appointment_id = ? AND user_id = ?");
     $stmt->execute([$appointment['id'], $_SESSION['user']['id']]);
     $appointment['already_rated'] = $stmt->fetchColumn() > 0;
 }
-unset($appointment); // break reference
+unset($appointment);
 ?>
 
 <!DOCTYPE html>

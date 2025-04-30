@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Ensure userId is set correctly from the body data attribute
     let userId;
     if (typeof window.userId !== 'undefined') {
         userId = window.userId;
@@ -8,7 +7,7 @@ $(document).ready(function() {
     }
     console.log('User ID (ratings.js):', userId);
 
-    // Initialize appointment cards
+    //appontment kartyak
     const appointmentCards = document.querySelectorAll('.appointment-card');
 
     appointmentCards.forEach(card => {
@@ -18,13 +17,13 @@ $(document).ready(function() {
         const deleteButton = card.querySelector('.delete-button');
 
         if (dateElement && timeElement && rateButton) {
-            // Combine date and time to create a full appointment date
+            //ido es datum beallitas
             const appointmentDate = new Date(`${dateElement.textContent} ${timeElement.textContent}`);
             const currentDate = new Date();
 
-            // Check if the appointment is in the future
+            //jovobeli idopont eldontese/ellenorzese
             if (appointmentDate > currentDate) {
-                // Hide the rate button if the appointment is in the future
+                //rating gomb elrejtese jovobeli idopontnal
                 rateButton.style.display = 'none';
             }
         }
@@ -65,7 +64,6 @@ $(document).ready(function() {
                     alert('Értékelés sikeresen mentve!');
                     $('.rate-button[data-appointment-id="' + appointmentId + '"]').hide();
                     $('#ratingModal').modal('hide');
-                    // location.reload(); // You can comment this out if you want instant hide
                 } else {
                     alert('Hiba történt az értékelés mentésekor: ' + response.message);
                 }

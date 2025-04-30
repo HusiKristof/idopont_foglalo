@@ -13,17 +13,17 @@ $user = $_SESSION['user'];
 $provider_id = $_GET['provider_id'] ?? null;
 $ratings = array_column($ratings, 'average_rating', 'provider_id');
 
-// Pagination setup
+//Pagination
 $perPage = 9;
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $perPage;
 
-// Get total count for pagination
+//össz szám a pagnationre
 $totalStmt = $db->query("SELECT COUNT(*) FROM providers");
 $totalProviders = $totalStmt->fetchColumn();
 $totalPages = ceil($totalProviders / $perPage);
 
-// Fetch paginated providers
+//pagnation provider fetch
 $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
     FROM providers p 
     LEFT JOIN ratings r ON p.id = r.provider_id 
@@ -227,7 +227,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modalBody">
-                <!-- Provider details will be inserted here -->
+                <!-- Provider leírás -->
             </div>
             <div class="modal-footer">
                 <?php if ($user['role'] !== 'admin'): ?>
@@ -243,7 +243,6 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Add a delete confirmation modal (like appointments) if not present already -->
 <div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" id="deleteServiceModalContent">
@@ -323,30 +322,27 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $(function() {
     $('.lazy').Lazy();
 
-    // Re-initialize lazy loading after AJAX filter or pagination
+    //pagnation után lazy loading
     $(document).on('ajaxComplete', function() {
         $('.lazy').Lazy();
     });
 
-    // Event delegation for dynamically loaded cards
+    //event delegáció a provider-list elemre
     $('#provider-list').on('click', '.card', function() {
         const providerId = $(this).data('id');
         $('#dataModal').data('provider-id', providerId);
 
-        // Dynamically load FullCalendar scripts only when needed
+        //dinamikusan betöltjük a szolgáltatás részleteit
         if (!window.fullCalendarLoaded) {
             $.when(
                 $.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'),
                 $.getScript('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js')
             ).done(function() {
                 window.fullCalendarLoaded = true;
-                // Now show modal and initialize calendar
                 $('#dataModal').modal('show');
-                // ...initialize calendar here...
             });
         } else {
             $('#dataModal').modal('show');
-            // ...initialize calendar here...
         }
     });
 });

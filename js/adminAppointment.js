@@ -1,4 +1,3 @@
-// filepath: /C:/MAMP/htdocs/husifix/2/idopont_foglalo/js/adminAppointment.js
 $(document).ready(function() {
 
     if (typeof window.userId !== 'undefined') {
@@ -14,22 +13,22 @@ $(document).ready(function() {
         updateAppointmentStatus(appointmentId, 'confirmed');
     });
 
-    // Elutasítás gomb kezelése
+    //Elutasítás gomb kezelése
     $('.reject-button').on('click', function() {
         var appointmentId = $(this).data('id');
-        updateAppointmentStatus(appointmentId, 'canceled'); // Corrected status
+        updateAppointmentStatus(appointmentId, 'canceled'); //correct status
     });
 
-    // Törlés gomb kezelése
+    //Törlés gomb kezelése
     $('.delete-button').on('click', function() {
         var appointmentId = $(this).data('id');
-        $('#deleteModal .btn-delete-confirm').data('id', appointmentId); // Set data-id on confirm button
+        $('#deleteModal .btn-delete-confirm').data('id', appointmentId); //data id beállítása a törlés gombhoz
     });
 
-    // Státusz frissítése AJAX kéréssel
+    //Státusz frissítése AJAX kéréssel
     function updateAppointmentStatus(appointmentId, status) {
         $.ajax({
-            url: '../controller/AppointmentController.php?action=update_status', // Correct URL
+            url: '../controller/AppointmentController.php?action=update_status', //Correct URL
             type: 'POST',
             data: {
                 appointment_id: appointmentId,
@@ -73,7 +72,6 @@ $(document).ready(function() {
         });
     }
 
-    // Attach event listener to the "Törlés" button inside the modal
     $('#deleteModal .btn-delete-confirm').on('click', function() {
         var appointmentId = $(this).data('id');
         deleteAppointment(appointmentId);

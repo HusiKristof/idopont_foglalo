@@ -2,7 +2,7 @@ $(document).ready(function() {
     let userId;
     let calendar;
 
-    // Initialize userId
+    //userId beállítása
     if (typeof window.userId !== 'undefined') {
         userId = window.userId;
     } else {
@@ -10,10 +10,10 @@ $(document).ready(function() {
     }
     console.log('User ID (booking.js):', userId);
 
-    // Card click handling
+    //kartya kattintás kezelése
     $('.card').on('click', function() {
-        const providerId = $(this).data('id'); // Get the provider ID from the clicked card
-        $('#dataModal').data('provider-id', providerId); // Set the provider ID in the modal
+        const providerId = $(this).data('id'); //provider ID lekérése kattintáskor
+        $('#dataModal').data('provider-id', providerId); //provider ID beállítása a modalban
         
         if (!userId) {
             console.error('userId is not set properly');
@@ -26,59 +26,52 @@ $(document).ready(function() {
         function initializeEventHandlers() {
             console.log('Initializing event handlers');
             
-            // Handle card clicks to show provider details
+            //kártya kattintás kezelése provider ID lekérése
             $('.card').on('click', function() {
                 const providerId = $(this).data('id');
                 console.log('Card clicked, provider ID:', providerId);
                 $('#dataModal').data('provider-id', providerId);
                 
-                // Fetch and display provider details
+                //fetch provider details
                 fetchProviderDetails(providerId);
                 
-                // Show the modal
+                //modal megjelenítése
                 $('#dataModal').modal('show');
             });
         
-            // Handle book button click
+            //book gomb kattintás kezelése
             $('#book').on('click', function() {
                 console.log('Book button clicked');
                 
-                // Clear the modal body first
                 $('#modalBody').empty().append('<div id="calendar"></div>');
                 
-                // Hide provider details
                 $('.provider-details').hide();
                 
-                // Initialize calendar
                 initializeCalendar();
                 
-                // Show booking button
+                //booking button megjelenítése
                 $('#bookAppointment').show();
-                // Hide the book button
                 $(this).hide();
             });
         
-            // Handle booking confirmation
+            //booking button kattintás kezelése
             $('#bookAppointment').on('click', handleBooking);
         
-            // Handle modal close - reset the view
+            //modal bezárásakor reset view
             $('#dataModal').on('hidden.bs.modal', function() {
                 console.log('Modal hidden - resetting view');
                 // Reset buttons
                 $('#book').show();
                 $('#bookAppointment').hide();
                 
-                // Destroy calendar if it exists
                 if (calendar) {
                     calendar.fullCalendar('destroy');
                     calendar = null;
                 }
             });
 
-            // Handle edit service button click
             $('#editServiceBtn').on('click', function() {
                 const providerId = $('#dataModal').data('provider-id');
-                // Fetch provider details again to prefill
                 $.ajax({
                     url: '../controller/providerController.php?action=fetch',
                     type: 'POST',
@@ -88,7 +81,6 @@ $(document).ready(function() {
                             ? JSON.parse(providerResponse)
                             : providerResponse;
 
-                        // Prefill the addServiceForm fields
                         $('#serviceType').val(provider.type);
                         $('#serviceName').val(provider.name);
                         $('#serviceDescription').val(provider.description);
@@ -98,16 +90,12 @@ $(document).ready(function() {
                         $('#serviceDuration').val(provider.duration);
                         $('#servicePhone').val(provider.phone_number || '');
 
-                        // Disable image upload
                         $('#serviceImage').prop('disabled', true).closest('.mb-3').hide();
 
-                        // Set edit mode
                         $('#addServiceForm').data('edit-id', providerId);
 
-                        // Change save button text
                         $('#saveService').text('Mentés (Szerkesztés)');
 
-                        // Show modal
                         $('#addServiceModal').modal('show');
                     }
                 });
@@ -117,10 +105,10 @@ $(document).ready(function() {
                 $('#dataModal').modal('hide');
                 setTimeout(function() {
                     $('#deleteModal').modal('show');
-                }, 400); // Wait for hide animation
+                }, 400); //animacios időzítése
             });
 
-            // If canceled, restore the service modal
+            //ha a deleteModal bezárul, akkor a dataModal is bezáruljon
             $('#deleteModal').on('hidden.bs.modal', function() {
                 if (!$('#dataModal').hasClass('show')) {
                     setTimeout(function() {
@@ -129,7 +117,6 @@ $(document).ready(function() {
                 }
             });
 
-            // On confirm, delete and close both modals
             $('.btn-delete-confirm').on('click', function() {
                 const providerId = $('#dataModal').data('provider-id');
                 $.ajax({
@@ -142,7 +129,7 @@ $(document).ready(function() {
                             if (result.status === 'success') {
                                 showAlert('Sikeresen törölted a szolgáltatást!', 'success');
                                 $('#deleteModal').modal('hide');
-                                // Optionally reload after a short delay
+                                
                                 setTimeout(() => location.reload(), 800);
                             } else {
                                 showAlert('Hiba történt a törlés közben.', 'error');
@@ -193,7 +180,6 @@ $(document).ready(function() {
                     try {
                         const provider = typeof response === 'string' ? JSON.parse(response) : response;
                         
-                        // Create HTML template using your existing CSS classes
                         const providerHtml = `
                             <div class="provider-container">
                                 <div class="provider-header">
@@ -229,7 +215,7 @@ $(document).ready(function() {
                         
                         $('#modalBody').html(providerHtml);
 
-                        // Check if current user is owner
+                        //jelenlegi felhasználó ID lekérése - tulajdonos-e a szolgáltatásnak
                         const userId = $('body').data('user-id');
                         if (userId && provider.user_id == userId) {
                             $('#adminServiceActions').show();
@@ -248,11 +234,11 @@ $(document).ready(function() {
             });
         }
 
-        // Update the initializeCalendar function
+        //initializecalendar function updatelese
         function initializeCalendar() {
             const providerId = $('#dataModal').data('provider-id');
             
-            // First fetch provider details to get duration
+            //provider id fetch
             $.ajax({
                 url: '../controller/providerController.php?action=fetch',
                 type: 'POST',
@@ -264,7 +250,7 @@ $(document).ready(function() {
 
                     const providerDuration = parseInt(provider.duration) || 30;
 
-                    // Now fetch working hours
+                    //workinghours fetch
                     $.ajax({
                         url: '../controller/providerController.php?action=getWorkingHours',
                         type: 'POST',
@@ -276,7 +262,7 @@ $(document).ready(function() {
                                 const [startDay, endDay] = days.split('-');
                                 const [startTime, endTime] = hours.split('-');
 
-                                // Define valid days mapping
+                                //napok mappolasa
                                 const dayMapping = {
                                     'Hétfő': 1,
                                     'Kedd': 2,
@@ -287,11 +273,11 @@ $(document).ready(function() {
                                     'Vasárnap': 0
                                 };
 
-                                // Get start and end day numbers
+                                //napok kezdete es vege
                                 const startDayNum = dayMapping[startDay];
                                 const endDayNum = dayMapping[endDay];
 
-                                // Create array of valid days
+                                //tomb a valid napokkal
                                 const validDays = [];
                                 let currentDay = startDayNum;
                                 while (true) {
@@ -378,7 +364,6 @@ $(document).ready(function() {
             });
         }
 
-        // Add this new function to fetch booked appointments
         function fetchBookedAppointments(date, providerId) {
             $.ajax({
                 url: '../controller/providerController.php?action=getBookedAppointments',
@@ -405,7 +390,7 @@ $(document).ready(function() {
             const start = moment(date.format('YYYY-MM-DD') + ' ' + startTime);
             const end = moment(date.format('YYYY-MM-DD') + ' ' + endTime);
             
-            // Clear previous time slots
+            //elozo time slotok torlese
             $('#calendar').fullCalendar('changeView', 'agendaDay', date);
             $('.fc-time-grid-container').empty().append('<div class="time-slots-container"></div>');
             
@@ -433,7 +418,7 @@ $(document).ready(function() {
                 currentTime.add(duration, 'minutes');
             }
             
-            // Fetch booked appointments to check availability
+            //foglalva van-e az idopont
             $.ajax({
                 url: '../controller/providerController.php?action=getBookedAppointments',
                 type: 'POST',
@@ -503,7 +488,6 @@ $(document).ready(function() {
                 return;
             }
 
-            // Store the selected date and time in a global variable or data attribute
             $('#dataModal').data('selected-date', selectedDate);
             $('#dataModal').data('selected-time', selectedTime);
         }

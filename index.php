@@ -42,7 +42,7 @@
                 <p class="toggle-text">Nincs még fiókod? <a href="#" id="show-register">Regisztrálj</a></p>
             </form>
 
-            <!-- Registration Form -->
+            <!-- Register Form -->
             <form id="registerForm" method="POST" style="display:none;">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
@@ -77,7 +77,6 @@
     <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script>
-    // Toggle forms
     $('#show-register').on('click', function(e) {
         e.preventDefault();
         $('#loginForm').hide();
@@ -93,7 +92,6 @@
         $('#social-login-text').text('Vagy jelentkezz be az E-mail címeddel');
     });
 
-    // Show error from AJAX
     function showError(msg) {
         $('#error-message').text(msg).show();
     }

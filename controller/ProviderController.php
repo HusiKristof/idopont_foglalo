@@ -29,19 +29,19 @@ if ($action === 'fetch') {
         $time = $_POST['selectedTime'] ?? null;
         $provider_id = $_POST['provider_id'] ?? null;
         
-        // Get provider working hours
+        //provider working hours csekkolása
         $stmt = $db->prepare("SELECT working_hours FROM providers WHERE id = ?");
         $stmt->execute([$provider_id]);
         $provider = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($provider) {
-            // Parse working hours
+            //working hours parsolása
             $workingHours = $provider['working_hours'];
             list($days, $hours) = explode(' ', $workingHours);
             list($startDay, $endDay) = explode('-', $days);
             list($startTime, $endTime) = explode('-', $hours);
 
-            // Get day of week for selected date
+            //napok és időpontok ellenőrzése
             $selectedDateTime = new DateTime($date);
             $selectedDayName = $selectedDateTime->format('l');
             $dayMapping = [
@@ -55,7 +55,7 @@ if ($action === 'fetch') {
             ];
             $selectedDay = $dayMapping[$selectedDayName];
 
-            // Check if selected day is within working days
+            //kiválasztott nap és időpont ellenőrzése
             $validDays = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
             $startDayIndex = array_search($startDay, $validDays);
             $endDayIndex = array_search($endDay, $validDays);
@@ -63,7 +63,7 @@ if ($action === 'fetch') {
 
             $isValidDay = $selectedDayIndex >= $startDayIndex && $selectedDayIndex <= $endDayIndex;
 
-            // Check if selected time is within working hours
+            //idő ellenőrzése a munkanapon belül
             $selectedTime = strtotime($time);
             $workingStartTime = strtotime($startTime);
             $workingEndTime = strtotime($endTime);
@@ -88,13 +88,13 @@ if ($action === 'fetch') {
     $provider_id = $_POST['provider_id'] ?? null;
 
     if ($date && $provider_id) {
-        // Fetch available hours from the database
+        //elérhető időpontok lekérdezése
         $query = "SELECT appointment_date FROM appointments WHERE provider_id = ? AND DATE(appointment_date) = ?";
         $stmt = $db->prepare($query);
         $stmt->execute([$provider_id, $date]);
         $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Format the response for FullCalendar
+        //válasz formatálása
         $events = [];
         foreach ($appointments as $appointment) {
             $events[] = [
@@ -110,7 +110,6 @@ if ($action === 'fetch') {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
     }
     exit;
-// Add this new action to handle working hours fetching
 } elseif ($action === 'getWorkingHours') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['provider_id'])) {
         $provider_id = (int)$_POST['provider_id'];
@@ -161,7 +160,7 @@ if ($action === 'fetch') {
 }
 
 function validateWorkingHours($workingHours) {
-    // Regular expression pattern for the working hours format
+    //working hour format
     $pattern = '/^(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)-(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)\s([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/';
 
     if (!preg_match($pattern, $workingHours)) {
@@ -171,15 +170,14 @@ function validateWorkingHours($workingHours) {
         ];
     }
 
-    // Split the working hours into components
+    //working hour splitelése
     list($days, $hours) = explode(' ', $workingHours);
     list($startDay, $endDay) = explode('-', $days);
     list($startTime, $endTime) = explode('-', $hours);
 
-    // Define the valid days order
     $validDays = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
     
-    // Check if days are in correct order
+    //sorbarendelés
     $startDayIndex = array_search($startDay, $validDays);
     $endDayIndex = array_search($endDay, $validDays);
     
@@ -190,7 +188,7 @@ function validateWorkingHours($workingHours) {
         ];
     }
 
-    // Compare times
+    //idők egymáshoz viszonyítása
     list($startHour, $startMinute) = explode(':', $startTime);
     list($endHour, $endMinute) = explode(':', $endTime);
     
@@ -210,12 +208,10 @@ function validateWorkingHours($workingHours) {
     ];
 }
 
-// Add this validation to your provider creation/update logic
 if ($action === 'create_provider' || $action === 'update_provider') {
-    // Validate working hours before proceeding
+    //working hours validálása mielött továbbmegyünk
     $workingHours = $_POST['working_hours'] ?? '';
     
-    // Regular expression pattern for the working hours format
     $pattern = '/^(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)-(Hétfő|Kedd|Szerda|Csütörtök|Péntek|Szombat|Vasárnap)\s([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/';
 
     if (!preg_match($pattern, $workingHours)) {
@@ -226,7 +222,7 @@ if ($action === 'create_provider' || $action === 'update_provider') {
         exit;
     }
 
-    // Additional validation for days and times
+    //mégtöbb validálás
     list($days, $hours) = explode(' ', $workingHours);
     list($startDay, $endDay) = explode('-', $days);
     list($startTime, $endTime) = explode('-', $hours);
@@ -255,7 +251,7 @@ if ($action === 'create_provider' || $action === 'update_provider') {
 if ($_GET['action'] === 'filter_providers') {
     $type = $_POST['type'];
     
-    // Lekérdezés a szolgáltatók adatbázisából a kategória alapján
+    //lekérdezés a szolgáltatók adatbázisából a kategória alapján
     $stmt = $db->prepare("SELECT p.*, COALESCE(AVG(r.rating), 0) as average_rating 
                         FROM providers p 
                         LEFT JOIN ratings r ON p.id = r.provider_id 

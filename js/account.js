@@ -6,10 +6,10 @@ $(document).ready(function() {
         
         if (editForm.style.display === 'none') {
             editForm.style.display = 'block';
-            accountDetails.style.display = 'none'; // Elrejti az alap adatokat
+            accountDetails.style.display = 'none'; //Elrejti az alap adatokat
         } else {
             editForm.style.display = 'none';
-            accountDetails.style.display = 'block'; // Visszaállítja az alap adatokat
+            accountDetails.style.display = 'block'; //Visszaállítja az alap adatokat
         }
     }
 

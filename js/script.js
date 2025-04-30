@@ -2,20 +2,20 @@ const container = document.getElementById('container');
 const registerButton = document.getElementById('register');
 const loginButton = document.getElementById('login');
 
-// Toggle between login and registration forms
+//login es regisztracio oldal switchelese
 registerButton.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent any potential navigation
+    e.preventDefault();
     container.classList.add("active");
     document.title = 'Regisztráció';
 });
 
 loginButton.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent any potential navigation
+    e.preventDefault();
     container.classList.remove("active");
     document.title = 'Bejelentkezés';
 });
 
-// Phone number input formatting
+//telefon input automatikus formázása
 const phoneInput = document.getElementById('phone');
 phoneInput.addEventListener('focus', () => {
     if (phoneInput.value === '') {
@@ -31,14 +31,12 @@ phoneInput.addEventListener('blur', () => {
 
 phoneInput.addEventListener('input', (e) => {
     let value = phoneInput.value;
-    // Remove any non-digit or non-hyphen characters (except the +36 prefix)
     if (!value.startsWith('+36 ')) {
         value = '+36 ' + value.replace(/[^0-9]/g, '');
     } else {
         value = '+36 ' + value.slice(4).replace(/[^0-9]/g, '');
     }
-    // Automatically add hyphens
-    const digits = value.replace(/[^0-9]/g, '').slice(2); // Only digits after +36
+    const digits = value.replace(/[^0-9]/g, '').slice(2);
     if (digits.length > 2 && digits.length <= 5) {
         value = `+36 ${digits.slice(0, 2)}-${digits.slice(2)}`;
     } else if (digits.length > 5) {
@@ -47,10 +45,9 @@ phoneInput.addEventListener('input', (e) => {
     phoneInput.value = value;
 });
 
-// Prevent default form submission and add custom navigation
 document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', function(e) {
-        // Validate inputs
+        //input validáció
         const inputs = this.querySelectorAll('input[required]');
         let isValid = true;
         
@@ -66,25 +63,21 @@ document.querySelectorAll('form').forEach(form => {
             alert('Kérem töltsön ki minden kötelező mezőt!');
         }
         
-        // Optional: You can add additional custom validation here
     });
 });
 
-// Prevent default link navigation
+//default link viselkedés letiltása
 document.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', function(e) {
         const href = this.getAttribute('href');
         
-        // Allow external links
+        //kulso linkek megnyitása új lapon
         if (href && href.startsWith('http')) return;
         
-        // Prevent default for internal links
         e.preventDefault();
         
-        // Custom routing
-        if (href === '#') return; // Do nothing for placeholder links
+        if (href === '#') return;
         
-        // Handle specific navigation scenarios
         if (href) {
             window.location.href = href;
         }
@@ -112,7 +105,7 @@ $(function() {
         const val = $(this).val();
         const {score, hints} = checkStrength(val);
 
-        // Progress bar color and width
+        //progress csik
         let color = '#ff4d4d', width = '25%';
         if (score === 2) { color = '#ffc107'; width = '50%'; }
         if (score === 3) { color = '#ffe066'; width = '75%'; }
@@ -120,7 +113,7 @@ $(function() {
 
         $bar.css({background: color, width: width});
 
-        // Show hints
+        //hintek megjelenítése
         if (val.length > 0 && hints.length > 0) {
             $hints.html(hints.map(h => `<li>${h}</li>`).join(''));
         } else {
@@ -128,7 +121,7 @@ $(function() {
         }
     });
 
-    // Prevent form submit if password is not strong enough
+    //ha jelszó gyenge, akkor a regisztráció letiltása
     $('#registerForm').on('submit', function(e) {
         const val = $password.val();
         const {score, hints} = checkStrength(val);

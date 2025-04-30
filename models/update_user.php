@@ -3,21 +3,21 @@ session_start();
 //var_dump($_SESSION); // Ellenőrizd, mit tartalmaz a session
 
 if (!isset($_SESSION['user'])) {
-    header('Location: index.php'); // Redirect to login if not logged in
+    header('Location: index.php');
     exit();
 }
 
-require '../database.php'; // Include your database connection
+require '../database.php';
 
-$userId = $_SESSION['user']['id'] ?? null; // Ellenőrizd, hogy az id létezik-e
+$userId = $_SESSION['user']['id'] ?? null; //Ellenőrizd, hogy az id létezik-e
 
 if ($userId === null) {
     echo "Hiba: A felhasználó azonosítója nem található. Session tartalom: ";
-    var_dump($_SESSION); // Debugging: mutasd meg a session tartalmát
+    var_dump($_SESSION); //Debugging: mutasd meg a session tartalmát
     exit();
 }
 
-$name = $_POST['name'] ?? ''; // Ellenőrizd, hogy a mező létezik
+$name = $_POST['name'] ?? ''; //Ellenőrizd, hogy a mező létezik
 $email = $_POST['email'] ?? '';
 $phone = $_POST['phone'] ?? '';
 
@@ -30,17 +30,17 @@ try {
     
     $stmt->execute();
 
-    // Ellenőrizd, hogy hány sor változott
+    //Ellenőrizd, hogy hány sor változott
     if ($stmt->rowCount() > 0) {
-        // Update session data
+        //Update session data
         $_SESSION['user']['name'] = $name;
         $_SESSION['user']['email'] = $email;
         $_SESSION['user']['phone'] = $phone;
 
-        header('Location: ../views/account.php'); // Redirect back to account page
+        header('Location: ../views/account.php');
         exit();
     } else {
-        echo "Nincs változás az adatbázisban."; // No changes made
+        echo "Nincs változás az adatbázisban."; 
     }
 } catch (PDOException $e) {
     echo "Hiba történt: " . $e->getMessage();

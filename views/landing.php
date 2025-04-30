@@ -1,13 +1,9 @@
 <?php
 session_start();
 
-// Check if this is a GET request to the root/default endpoint
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/') {
     if (!isset($_SESSION['user'])) {
-        // If not logged in, stay on the homepage
-        // No redirection needed since this is the default page
     } else {
-        // If logged in, redirect to main page
         header('Location: /mainpage');
         exit();
     }

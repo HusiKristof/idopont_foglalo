@@ -1,16 +1,15 @@
 <?php
-// controller/AppointmentController.php
 require_once '../models/User.php';
 require_once '../models/Appointment.php';
-require_once '../database.php'; // Database connection
+require_once '../database.php'; //Adatbázis kapcsolat
 
 session_start();
 if (!isset($_SESSION['user'])) {
-    header('Location: index.php'); // Redirect to login if not logged in
+    header('Location: index.php'); //Vissza a bejelentkezési oldalra, ha a felhasználó nincs bejelentkezve
     exit();
 }
 
-header('Content-Type: application/json'); // Ensure the response is JSON
+header('Content-Type: application/json'); //Json válasz küldése
 
 $action = isset($_GET["action"]) ? $_GET["action"] : null;
 $userModel = new User($db);
@@ -22,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $appointmentId = $_POST['appointment_id'];
             $providerId = $_POST['provider_id'];
             $rating = $_POST['rating'];
-            $userId = $_SESSION['user']['id']; // Get user ID from session
+            $userId = $_SESSION['user']['id']; //Id a bejelentkezett felhasználóra
 
-            // Validate inputs
+            //bemenet ellenőrzése
             if (!$appointmentId || !$providerId || !$rating) {
                 throw new Exception('Missing required fields');
             }

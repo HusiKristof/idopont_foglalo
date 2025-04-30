@@ -20,7 +20,7 @@ class User {
                 ];
             }
             
-            // Add logging
+            //logging failed login attempt
             error_log("Failed login attempt for email: " . $email);
             
             return [
@@ -38,7 +38,7 @@ class User {
 
     public function register($name, $email, $phone, $password) {
         try {
-            // Check if email already exists
+            //letezik az email
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return [
                     'status' => 'error',
@@ -54,7 +54,7 @@ class User {
                 ];
             }
 
-            // Check if phone already exists
+            //letezik a telefon
             $stmt = $this->db->prepare("SELECT id FROM users WHERE phone = ?");
             $stmt->execute([$phone]);
             if ($stmt->fetch()) {

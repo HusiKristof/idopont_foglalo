@@ -1,22 +1,22 @@
 const alerts = [];
-    const ALERT_HEIGHT = 70; // Height of alert + margin
+    const ALERT_HEIGHT = 70;
 
     function showAlert(message, type) {
-            // Create new alert
+            //create new alert
             const alert = document.createElement('div');
             alert.className = `alert ${type}`;
             alert.textContent = message;
 
-            // Add alert to document and alerts array
+            //uj alert hozzáadása a DOM-hoz
             document.body.appendChild(alert);
             alerts.push(alert);
 
-            // Trigger animation after a small delay to ensure proper transition
+            //animation trigger
             setTimeout(() => {
                 repositionAlerts();
             }, 10);
 
-            // Remove alert after 4 seconds
+            //4mp utan remove
             setTimeout(() => {
                 removeAlert(alert);
             }, 4000);
@@ -24,7 +24,6 @@ const alerts = [];
 
     function repositionAlerts() {
         alerts.forEach((alert, index) => {
-            // Calculate position for each alert
             const topPosition = 20 + (index * ALERT_HEIGHT);
             alert.style.top = topPosition + 'px';
             alert.classList.add('show');
@@ -34,17 +33,16 @@ const alerts = [];
     function removeAlert(alert) {
         const index = alerts.indexOf(alert);
         if (index > -1) {
-            // Start slide out animation
+            //animacio slide
             alert.classList.remove('show');
             alert.style.top = '-100px';
 
-            // Remove from array
+            //tombbol való eltávolítás
             alerts.splice(index, 1);
 
-            // Remove from DOM after animation completes
+            //eltavolítás a DOM-ból
             setTimeout(() => {
                 alert.remove();
-                // Reposition remaining alerts
                 repositionAlerts();
             }, 500);
         }
